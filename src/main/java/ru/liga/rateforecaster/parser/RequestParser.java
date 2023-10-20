@@ -1,10 +1,10 @@
 package ru.liga.rateforecaster.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.liga.rateforecaster.model.Currency;
 import ru.liga.rateforecaster.model.ParsedRequest;
 import ru.liga.rateforecaster.model.RateType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +28,10 @@ public class RequestParser {
      * @return A ParsedRequest object containing the extracted currency and rate type, or null if the request is not correctly formatted.
      */
     public ParsedRequest parseRequest(String request) {
-        List<String> requestElements = parseWords(request);
-
+        final List<String> requestElements = parseWords(request);
         if (isValidRequest(requestElements)) {
-            Currency currency = parseCurrency(requestElements);
-            RateType rateType = parseRateType(requestElements);
+            final Currency currency = parseCurrency(requestElements);
+            final RateType rateType = parseRateType(requestElements);
             return new ParsedRequest(rateType, currency);
         } else {
             logger.error("Failed to parse request: Invalid request format");

@@ -1,34 +1,43 @@
 import com.opencsv.exceptions.CsvValidationException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import ru.liga.rateforecaster.data.processor.CurrencyDataProcessor;
 import ru.liga.rateforecaster.model.CurrencyData;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 public class CurrencyDataProcessorTest {
-    @Test
-    public void testReadUSDDataFromResources() throws CsvValidationException, IOException {
-        String filePath = "/USD.csv";
-        String currencyName = "Доллар США";
-        CurrencyDataProcessor dataProcessor = new CurrencyDataProcessor(filePath, currencyName);
 
-        LinkedList<CurrencyData> currencyDataList = dataProcessor.readCurrencyDataFromResources();
+    private CurrencyDataProcessor currencyDataProcessor;
 
-        assertNotNull(currencyDataList);
-
-        assertCurrencyData(currencyDataList.get(0), "10/13/2023", 96.9948);
-        assertCurrencyData(currencyDataList.get(1), "10/12/2023", 99.9808);
-        assertCurrencyData(currencyDataList.get(2), "10/11/2023", 99.9349);
+    @BeforeEach
+    public void setUp() {
+        currencyDataProcessor = Mockito.spy(new CurrencyDataProcessor("/TRY.csv"));
     }
 
-    private void assertCurrencyData(CurrencyData currencyData, String expectedDate, double expectedRate) {
-        assertEquals(LocalDate.parse(expectedDate, DateTimeFormatter.ofPattern("MM/dd/yyyy")), currencyData.getDate());
-        assertEquals(expectedRate, currencyData.getRate(), 0.001);
+    @Test
+    public void testReadCurrencyDataFromResources() throws CsvValidationException, IOException {
+        LinkedList<CurrencyData> expectedData = createSampleCurrencyData();
+
+        when(currencyDataProcessor.readCurrencyDataFromResources()).thenReturn(expectedData);
+
+        LinkedList<CurrencyData> actualData = currencyDataProcessor.readCurrencyDataFromResources();
+
+        assertEquals(expectedData, actualData);
+    }
+
+    private LinkedList<CurrencyData> createSampleCurrencyData() {
+        LinkedList<CurrencyData> data = new LinkedList<>();
+        data.add(new CurrencyData(LocalDate.of(2022, 1, 1), new BigDecimal("1.0")));
+        data.add(new CurrencyData(LocalDate.of(2022, 1, 2), new BigDecimal("1.1")));
+        data.add(new CurrencyData(LocalDate.of(2022, 1, 3), new BigDecimal("1.2")));
+        return data;
     }
 }

@@ -4,8 +4,8 @@ package ru.liga.rateforecaster.model;
  * A class representing a parsed user request for a currency forecast.
  */
 public class ParsedRequest {
-    private RateType rateType;
-    private Currency currency;
+    private final RateType rateType;
+    private final Currency currency;
 
     /**
      * Constructs a new ParsedRequest with the provided rate type and currency.

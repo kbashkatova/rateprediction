@@ -8,16 +8,14 @@ import ru.liga.rateforecaster.model.Currency;
  */
 public class GenericCurrencyProcessorFactory implements CurrencyProcessorFactory {
     private final String filePath;
-    private final String currencyName;
 
-    public GenericCurrencyProcessorFactory(String filePath, String currencyName) {
+    public GenericCurrencyProcessorFactory(String filePath) {
         this.filePath = filePath;
-        this.currencyName = currencyName;
     }
 
     @Override
     public CurrencyDataProcessor createCurrencyDataProcessor() {
-        return new CurrencyDataProcessor(filePath, currencyName);
+        return new CurrencyDataProcessor(filePath);
     }
 
     /**
@@ -27,7 +25,7 @@ public class GenericCurrencyProcessorFactory implements CurrencyProcessorFactory
      * @return a CurrencyProcessorFactory for the specified currency
      */
     public static CurrencyProcessorFactory getFactory(Currency currency) {
-        Currency currencyEnum = Currency.valueOf(currency.getCode());
-        return new GenericCurrencyProcessorFactory(currencyEnum.getFilePath(), currencyEnum.getName());
+        final Currency currencyEnum = Currency.valueOf(currency.getCode());
+        return new GenericCurrencyProcessorFactory(currencyEnum.getFilePath());
     }
 }

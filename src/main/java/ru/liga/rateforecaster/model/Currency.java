@@ -1,20 +1,20 @@
 package ru.liga.rateforecaster.model;
 
+import ru.liga.rateforecaster.utils.AppConfig;
+
 /**
  * An enum representing currency types.
  */
 public enum Currency {
-    EUR("EUR", "Евро", "/EUR.csv"),
-    TRY("TRY", "Турецкая лира", "/TRY.csv"),
-    USD("USD", "Доллар США", "/USD.csv");
+    EUR("EUR", AppConfig.getInstance().getEurFilePath()),
+    TRY("TRY",  AppConfig.getInstance().getTryFilePath()),
+    USD("USD", AppConfig.getInstance().getUsdFilePath());
 
     private final String code;
-    private final String name;
     private final String filePath;
 
-    Currency(String code, String name, String filePath) {
+    Currency(String code, String filePath) {
         this.code = code;
-        this.name = name;
         this.filePath = filePath;
     }
 
@@ -22,9 +22,6 @@ public enum Currency {
         return code;
     }
 
-    public String getName() {
-        return name;
-    }
 
     public String getFilePath() {
         return filePath;

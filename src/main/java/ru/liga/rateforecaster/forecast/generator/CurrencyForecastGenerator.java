@@ -13,11 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 /**
  * The CurrencyForecastGenerator class represents an abstract generator for currency forecasts.
@@ -37,9 +40,9 @@ public abstract class CurrencyForecastGenerator {
      */
     public static CurrencyForecastGenerator selectForecastGenerator(RateType forecastType) {
 
-        if (forecastType == RateType.TOMORROW) {
+        if (forecastType.equals(RateType.TOMORROW)) {
             return new TomorrowCurrencyForecastGenerator();
-        } else if (forecastType == RateType.WEEK) {
+        } else if (forecastType.equals(RateType.WEEK)) {
             return new WeeklyCurrencyForecastGenerator();
         } else {
             throw new IllegalArgumentException("Invalid forecast type: " + forecastType);
@@ -60,11 +63,11 @@ public abstract class CurrencyForecastGenerator {
             if (currentDate.isEqual(targetDate.plusDays(1))) {
                 return currencyDataList;
             } else {
-                double averageCurs = RateCalculator.calculateAverageRateFromLastSevenRates(currencyDataList, currentDate);
+                final BigDecimal averageCurs = RateCalculator.calculateAverageRateFromLastSevenRates(currencyDataList, currentDate);
                 currencyDataList.addFirst(new CurrencyData(currentDate, averageCurs));
-                LocalDate nextDate = DateUtils.getNextDate(currentDate);
-                List<CurrencyData> newCurrencyData = fillMissingDates(currencyDataList, nextDate, targetDate);
-                List<CurrencyData> result = new ArrayList<>();
+                final LocalDate nextDate = DateUtils.getNextDate(currentDate);
+                final List<CurrencyData> newCurrencyData = fillMissingDates(currencyDataList, nextDate, targetDate);
+                final List<CurrencyData> result = new ArrayList<>();
                 result.add(new CurrencyData(currentDate, averageCurs));
                 result.addAll(newCurrencyData);
                 return result;
@@ -85,12 +88,12 @@ public abstract class CurrencyForecastGenerator {
      */
     protected CurrencyDataProcessor createDataProcessor(Currency currency) {
         try {
-            CurrencyProcessorFactory factory = GenericCurrencyProcessorFactory.getFactory(currency);
-            if (factory == null) {
+            final CurrencyProcessorFactory factory = GenericCurrencyProcessorFactory.getFactory(currency);
+            if (isNull(factory)) {
                 throw new IllegalArgumentException("Invalid currency type: " + currency);
             }
             return factory.createCurrencyDataProcessor();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Failed to create data processor: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to create data processor", e);
         }

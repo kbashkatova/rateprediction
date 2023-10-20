@@ -10,7 +10,7 @@ public class DateUtils {
 
     private static final int ONE_DAY = 1;
     private static final int WEEK = 7;
-    private static final String DATE_FORMAT = "M/d/yyyy";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     /**
      * Get the date for tomorrow.
@@ -48,7 +48,7 @@ public class DateUtils {
      * @return A LocalDate object parsed from the date string.
      */
     public static LocalDate formatDate(String dateStr) {
-        return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        return LocalDate.parse(dateStr, DATE_FORMATTER);
     }
 
     /**

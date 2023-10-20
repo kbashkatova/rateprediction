@@ -25,8 +25,8 @@ class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator implemen
      */
     @Override
     public String generateForecast(Currency currency) throws CsvValidationException, IOException {
-        LocalDate forecastStartEnd = DateUtils.getLastDayOfWeekForecast();
-        LinkedList<CurrencyData> currencyDataList = createDataProcessor(currency).readCurrencyDataFromResources();
+        final LocalDate forecastStartEnd = DateUtils.getLastDayOfWeekForecast();
+        final LinkedList<CurrencyData> currencyDataList = createDataProcessor(currency).readCurrencyDataFromResources();
         return format(currency, calculateWeeklyForecast(currencyDataList, forecastStartEnd));
     }
 
@@ -39,7 +39,7 @@ class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator implemen
      */
     protected List<CurrencyData> calculateWeeklyForecast(LinkedList<CurrencyData> currencyDataList,
                                                          LocalDate targetDate) {
-        CurrencyData rateForDate = RateCalculator.calculateRateForDate(currencyDataList, targetDate);
+        final CurrencyData rateForDate = RateCalculator.calculateRateForDate(currencyDataList, targetDate);
 
         if (rateForDate == null) {
             fillMissingDates(currencyDataList, currencyDataList.get(0).getDate(), targetDate);
@@ -56,12 +56,12 @@ class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator implemen
      */
     @Override
     public String format(Currency currency, List<CurrencyData> forecastData) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(String.format("rate %s week%n", currency));
 
-        ListIterator<CurrencyData> iterator = forecastData.listIterator(forecastData.size());
+       final ListIterator<CurrencyData> iterator = forecastData.listIterator(forecastData.size());
         while (iterator.hasPrevious()) {
-            CurrencyData data = iterator.previous();
+            final CurrencyData data = iterator.previous();
             sb.append(String.format("%s - %.2f%n", data.getDate(), data.getRate()));
         }
 

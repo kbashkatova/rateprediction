@@ -3,17 +3,17 @@ package ru.liga.rateforecaster.data.processor;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
-import ru.liga.rateforecaster.model.CurrencyData;
-import ru.liga.rateforecaster.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.liga.rateforecaster.model.CurrencyData;
+import ru.liga.rateforecaster.utils.DateUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.LinkedList;
-import java.util.Objects;
 
 /**
  * The CurrencyDataProcessor class is responsible for processing currency data from a CSV file
@@ -21,10 +21,9 @@ import java.util.Objects;
  */
 public class CurrencyDataProcessor {
 
-    protected String filePath;
-    protected String currencyName;
+    protected final String filePath;
 
-    public CurrencyDataProcessor(String filePath, String currencyName) {
+    public CurrencyDataProcessor(String filePath) {
         this.filePath = filePath;
     }
 
@@ -36,23 +35,23 @@ public class CurrencyDataProcessor {
      * @throws IOException            if an I/O error occurs while reading the resource.
      */
     public LinkedList<CurrencyData> readCurrencyDataFromResources() throws CsvValidationException, IOException {
-        Logger logger = LoggerFactory.getLogger(CurrencyDataProcessor.class);
-        LinkedList<CurrencyData> currencyDataList = new LinkedList<>();
+        final Logger logger = LoggerFactory.getLogger(CurrencyDataProcessor.class);
+        final LinkedList<CurrencyData> currencyDataList = new LinkedList<>();
         try (InputStream resourceStream = getClass().getResourceAsStream(filePath)) {
             if (resourceStream == null) {
                 logger.error("Failed to open resource stream for file: {}", filePath);
                 throw new IOException("Failed to open resource stream for file: " + filePath);
             }
-            InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(resourceStream));
-            CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+            final InputStreamReader reader = new InputStreamReader(resourceStream);
+            final CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
-                String dateStr = nextRecord[1];
-                double curs = Double.parseDouble(nextRecord[2]);
+                final String dateStr = nextRecord[1];
+                final BigDecimal curs = new BigDecimal(nextRecord[2]);
 
-                LocalDate date = DateUtils.formatDate(dateStr);
+                final LocalDate date = DateUtils.formatDate(dateStr);
 
-                CurrencyData currencyData = new CurrencyData(date, curs);
+                final CurrencyData currencyData = new CurrencyData(date, curs);
                 currencyDataList.add(currencyData);
             }
         } catch (IOException e) {

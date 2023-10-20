@@ -9,6 +9,7 @@ import ru.liga.rateforecaster.model.CurrencyData;
 import ru.liga.rateforecaster.utils.DateUtils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -26,9 +27,9 @@ public class TomorrowCurrencyForecastGenerator extends CurrencyForecastGenerator
      */
     @Override
     public String generateForecast(Currency currency) throws CsvValidationException, IOException {
-        LocalDate forecastDate = DateUtils.getTomorrowDate();
-        LinkedList<CurrencyData> currencyDataList =  createDataProcessor(currency).readCurrencyDataFromResources();
-        double forecastCurs = calculateForecastForDate(currencyDataList, forecastDate);
+        final LocalDate forecastDate = DateUtils.getTomorrowDate();
+        final LinkedList<CurrencyData> currencyDataList =  createDataProcessor(currency).readCurrencyDataFromResources();
+        final BigDecimal forecastCurs = calculateForecastForDate(currencyDataList, forecastDate);
         return format(currency, new ArrayList<>(List.of(new CurrencyData(forecastDate, forecastCurs))));
     }
 
@@ -40,7 +41,7 @@ public class TomorrowCurrencyForecastGenerator extends CurrencyForecastGenerator
      * @return The forecasted currency rate for the target date.
      * @throws ArithmeticException if the forecast cannot be calculated.
      */
-    protected double calculateForecastForDate(LinkedList<CurrencyData> currencyData,
+    protected BigDecimal calculateForecastForDate(LinkedList<CurrencyData> currencyData,
                                               LocalDate targetDate) throws ArithmeticException {
         CurrencyData rateForDate = RateCalculator.calculateRateForDate(currencyData, targetDate);
         if (rateForDate != null) {
@@ -63,13 +64,6 @@ public class TomorrowCurrencyForecastGenerator extends CurrencyForecastGenerator
      * @param currency      The currency for which the forecast is made.
      * @param forecastData  A list of currency data representing the tomorrow's forecast.
      * @return A formatted string representing the tomorrow's forecast data.
-     */
-    /**
-     * Formats the currency forecast data for display.
-     *
-     * @param currency      The currency for which the forecast is made.
-     * @param forecastData  A list of currency data representing the daily forecast.
-     * @return A formatted string representing the daily currency forecast data.
      */
     @Override
     public String format(Currency currency, List<CurrencyData> forecastData) {

@@ -7,7 +7,7 @@ public enum RateType {
     TOMORROW("tomorrow"),
     WEEK("week");
 
-    private String description;
+    private final String description;
 
 
     RateType(String description) {

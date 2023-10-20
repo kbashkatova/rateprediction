@@ -7,8 +7,8 @@ import java.util.Scanner;
  * This class provides methods for reading user input from the console.
  */
 public class ConsoleInputReader {
-    private final String REQUEST_TEXT = "Введите запрос: ";
-    private Scanner scanner;
+    private final String REQUEST_TEXT =  "Введите запрос (для завершения программы введите \"exit\"): ";
+    private final Scanner scanner;
 
 
     public ConsoleInputReader() {
