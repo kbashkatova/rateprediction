@@ -56,15 +56,15 @@ class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator implemen
      */
     @Override
     public String format(Currency currency, List<CurrencyData> forecastData) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("rate %s week%n", currency));
+        final StringBuilder formattedResult = new StringBuilder();
+        formattedResult.append(String.format("rate %s week%n", currency));
 
        final ListIterator<CurrencyData> iterator = forecastData.listIterator(forecastData.size());
         while (iterator.hasPrevious()) {
             final CurrencyData data = iterator.previous();
-            sb.append(String.format("%s - %.2f%n", data.getDate(), data.getRate()));
+            formattedResult.append(String.format("%s - %.2f%n", data.getDate(), data.getRate()));
         }
 
-        return sb.toString();
+        return formattedResult.toString();
     }
 }

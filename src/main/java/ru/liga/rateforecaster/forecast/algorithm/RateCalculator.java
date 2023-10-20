@@ -12,8 +12,8 @@ import java.util.List;
 /**
  * A utility class for calculating currency rates.
  */
-public  class RateCalculator {
-
+public class RateCalculator {
+    private static final int AVERAGE_CALCULATION_WINDOW = 7;
     private static final Logger logger = LoggerFactory.getLogger(RateCalculator.class);
 
     /**
@@ -29,6 +29,7 @@ public  class RateCalculator {
                 .findFirst()
                 .orElse(null);
     }
+
     /**
      * Calculate the average currency rate from the last seven rates before the specified date.
      *
@@ -39,12 +40,12 @@ public  class RateCalculator {
     public static BigDecimal calculateAverageRateFromLastSevenRates(List<CurrencyData> currencyDataList, LocalDate currentDate) {
         try {
             final List<CurrencyData> previousData = currencyDataList.stream()
-                    .filter(data -> data.getRate().compareTo(BigDecimal.ZERO) > 0)
-                    .filter(data -> data.getDate().isBefore(currentDate))
-                    .limit(7)
+                    .filter(data -> data.getRate().compareTo(BigDecimal.ZERO) > 0 &&
+                            data.getDate().isBefore(currentDate))
+                    .limit(AVERAGE_CALCULATION_WINDOW)
                     .toList();
 
-            if (previousData.size() < 7) {
+            if (previousData.size() < AVERAGE_CALCULATION_WINDOW) {
                 logger.warn("Insufficient data for calculating a 7-day average rate.");
                 return BigDecimal.valueOf(0.0);
             }

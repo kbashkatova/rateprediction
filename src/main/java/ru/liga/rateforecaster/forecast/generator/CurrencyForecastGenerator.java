@@ -63,13 +63,13 @@ public abstract class CurrencyForecastGenerator {
             if (currentDate.isEqual(targetDate.plusDays(1))) {
                 return currencyDataList;
             } else {
-                final BigDecimal averageCurs = RateCalculator.calculateAverageRateFromLastSevenRates(currencyDataList, currentDate);
-                currencyDataList.addFirst(new CurrencyData(currentDate, averageCurs));
+                final BigDecimal averageRate = RateCalculator.calculateAverageRateFromLastSevenRates(currencyDataList, currentDate);
+                currencyDataList.addFirst(new CurrencyData(currentDate, averageRate));
                 final LocalDate nextDate = DateUtils.getNextDate(currentDate);
-                final List<CurrencyData> newCurrencyData = fillMissingDates(currencyDataList, nextDate, targetDate);
+                final List<CurrencyData> filledCurrencyData = fillMissingDates(currencyDataList, nextDate, targetDate);
                 final List<CurrencyData> result = new ArrayList<>();
-                result.add(new CurrencyData(currentDate, averageCurs));
-                result.addAll(newCurrencyData);
+                result.add(new CurrencyData(currentDate, averageRate));
+                result.addAll(filledCurrencyData);
                 return result;
             }
         } catch (Exception e) {
