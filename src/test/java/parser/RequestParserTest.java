@@ -1,9 +1,9 @@
 package parser;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import ru.liga.rateforecaster.model.Currency;
+import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.model.ParsedRequest;
-import ru.liga.rateforecaster.model.RateType;
+import ru.liga.rateforecaster.enums.RateType;
 import ru.liga.rateforecaster.parser.RequestParser;
 
 public class RequestParserTest {

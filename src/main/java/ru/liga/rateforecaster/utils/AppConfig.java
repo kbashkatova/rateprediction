@@ -32,6 +32,7 @@ public class AppConfig {
         return instance;
     }
 
+
     public String getTryFilePath() {
         return properties.getProperty("tryFilePath");
     }
@@ -42,5 +43,9 @@ public class AppConfig {
 
     public String getUsdFilePath() {
         return properties.getProperty("usdFilePath");
+    }
+
+    public String getLocale() {
+        return properties.getProperty("locale");
     }
 }

@@ -26,11 +26,13 @@ public class ConsoleInputReaderTest {
 
     @Test
     public void testReadConsoleInput() {
-        ConsoleInputReader reader = new ConsoleInputReader();
+        ConsoleInputReader reader = new ConsoleInputReader("en");
+        ByteArrayInputStream in = new ByteArrayInputStream("User input\n".getBytes());
+        System.setIn(in);
         String input = reader.readConsoleInput();
         assertThat(input).isEqualTo("User input");
+        System.setIn(System.in);
     }
-
     @After
     public void restoreStreams() {
         System.setOut(originalOut);

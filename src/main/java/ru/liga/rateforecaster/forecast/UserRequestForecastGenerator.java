@@ -7,9 +7,12 @@ import ru.liga.rateforecaster.forecast.generator.CurrencyForecastGenerator;
 import ru.liga.rateforecaster.model.ParsedRequest;
 import ru.liga.rateforecaster.parser.ConsoleInputReader;
 import ru.liga.rateforecaster.parser.RequestParser;
+import ru.liga.rateforecaster.utils.AppConfig;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static java.util.Objects.isNull;
 import static ru.liga.rateforecaster.forecast.generator.CurrencyForecastGenerator.selectForecastGenerator;
@@ -19,12 +22,13 @@ import static ru.liga.rateforecaster.forecast.generator.CurrencyForecastGenerato
  * It parses the user request, selects the appropriate forecast generator, and generates the forecast.
  */
 public class UserRequestForecastGenerator {
-    private static final String ERROR_REQUEST_MASSAGE = "Проверьте запрос на корректность.";
+    private static final ResourceBundle resourceBundle = loadResourceBundle();
     private static final Logger logger = LoggerFactory.getLogger(UserRequestForecastGenerator.class);
 
     /**
      * Processes a user's request to generate a currency forecast.
      * This method reads a user's request, checks for errors, and generates a currency forecast based on the request.
+     *
      * @return A String containing the generated currency forecast or an error message in case of failure.
      */
     public static String proceedUserRequest() {
@@ -33,12 +37,14 @@ public class UserRequestForecastGenerator {
     }
 
     private static ParsedRequest getParsedRequest() {
-        ParsedRequest parsedRequest = null;
-        ConsoleInputReader consoleInputReader = new ConsoleInputReader();
+        AppConfig appConfig = AppConfig.getInstance();
+        String locale = appConfig.getLocale();
+        ConsoleInputReader consoleInputReader = new ConsoleInputReader(locale);
         String request = requestChecker(consoleInputReader.readConsoleInput());
+        ParsedRequest parsedRequest = new RequestParser().parseRequest(request);
         while (isNull(parsedRequest)) {
-            System.out.println(ERROR_REQUEST_MASSAGE);
-            consoleInputReader = new ConsoleInputReader();
+            System.out.println(resourceBundle.getString("error_request_message"));
+            consoleInputReader = new ConsoleInputReader(locale);
             request = requestChecker(consoleInputReader.readConsoleInput());
             parsedRequest = new RequestParser().parseRequest(request);
         }
@@ -55,7 +61,7 @@ public class UserRequestForecastGenerator {
 
     private static String checkForExit(String request) {
         if (request.equals("exit")) {
-            logger.info("Вызод из программы");
+            logger.info("Выход из программы");
             System.exit(0);
         }
         return request;
@@ -69,7 +75,7 @@ public class UserRequestForecastGenerator {
      */
     public static String generateForecast(ParsedRequest parsedRequest) {
         if (isNull(parsedRequest.getCurrency()) || isNull(parsedRequest.getRateType())) {
-           return ERROR_REQUEST_MASSAGE;
+            return resourceBundle.getString("error_request_message");
         }
         try {
             final CurrencyForecastGenerator forecast = selectForecastGenerator(parsedRequest.getRateType());
@@ -90,5 +96,11 @@ public class UserRequestForecastGenerator {
             logger.error("Failed to generate forecast: {}", e.getMessage(), e);
             return "Failed to generate forecast";
         }
+    }
+
+    private static ResourceBundle loadResourceBundle() {
+        AppConfig appConfig = AppConfig.getInstance();
+        String locale = appConfig.getLocale();
+        return ResourceBundle.getBundle("messages/messages", new Locale(locale));
     }
 }

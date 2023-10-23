@@ -2,9 +2,9 @@ package ru.liga.rateforecaster.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.rateforecaster.model.Currency;
+import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.model.ParsedRequest;
-import ru.liga.rateforecaster.model.RateType;
+import ru.liga.rateforecaster.enums.RateType;
 
 import java.util.ArrayList;
 import java.util.List;

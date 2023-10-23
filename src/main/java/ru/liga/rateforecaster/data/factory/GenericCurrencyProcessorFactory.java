@@ -1,7 +1,7 @@
 package ru.liga.rateforecaster.data.factory;
 
 import ru.liga.rateforecaster.data.processor.CurrencyDataProcessor;
-import ru.liga.rateforecaster.model.Currency;
+import ru.liga.rateforecaster.enums.Currency;
 
 /**
  * A factory for creating instances of CurrencyDataProcessor.

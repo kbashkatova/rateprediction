@@ -4,7 +4,7 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import ru.liga.rateforecaster.forecast.algorithm.RateCalculator;
 import ru.liga.rateforecaster.formatter.ResultFormatter;
-import ru.liga.rateforecaster.model.Currency;
+import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.model.CurrencyData;
 import ru.liga.rateforecaster.utils.DateUtils;
 

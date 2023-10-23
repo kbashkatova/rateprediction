@@ -1,6 +1,6 @@
 package ru.liga.rateforecaster.formatter;
 
-import ru.liga.rateforecaster.model.Currency;
+import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.model.CurrencyData;
 
 import java.util.List;

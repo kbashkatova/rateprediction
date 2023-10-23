@@ -1,5 +1,8 @@
 package ru.liga.rateforecaster.model;
 
+import ru.liga.rateforecaster.enums.Currency;
+import ru.liga.rateforecaster.enums.RateType;
+
 /**
  * A class representing a parsed user request for a currency forecast.
  */

@@ -1,4 +1,4 @@
-package ru.liga.rateforecaster.model;
+package ru.liga.rateforecaster.enums;
 
 import ru.liga.rateforecaster.utils.AppConfig;
 
