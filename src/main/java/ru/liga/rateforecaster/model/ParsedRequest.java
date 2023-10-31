@@ -1,32 +1,32 @@
 package ru.liga.rateforecaster.model;
 
-import ru.liga.rateforecaster.enums.Currency;
-import ru.liga.rateforecaster.enums.RateType;
+import lombok.Builder;
+import lombok.Getter;
+import ru.liga.rateforecaster.enums.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A class representing a parsed user request for a currency forecast.
  */
+@Getter
+@Builder
 public class ParsedRequest {
+    private final List<Currency> currencies;
+    private final Optional<LocalDate> date;
     private final RateType rateType;
-    private final Currency currency;
+    private final Algorithm algorithm;
+    private final OutputType outputType;
 
-    /**
-     * Constructs a new ParsedRequest with the provided rate type and currency.
-     *
-     * @param rateType The rate type requested in the user's query.
-     * @param currency The currency for which the forecast is requested.
-     */
-    public ParsedRequest(RateType rateType, Currency currency) {
+
+    public ParsedRequest(List<Currency> currencies, Optional<LocalDate> date, RateType rateType, Algorithm algorithm, OutputType outputType) {
+        this.currencies = currencies;
+        this.date = date;
         this.rateType = rateType;
-        this.currency = currency;
+        this.algorithm = algorithm;
+        this.outputType = outputType;
     }
 
-    public RateType getRateType() {
-        return rateType;
-    }
-
-
-    public Currency getCurrency() {
-        return currency;
-    }
 }

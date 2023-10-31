@@ -45,6 +45,10 @@ public class AppConfig {
         return properties.getProperty("usdFilePath");
     }
 
+    public String getBgnFilePath() {return properties.getProperty("bgnFilePath");}
+    public String getAmdFilePath() {return properties.getProperty("amdFilePath");}
+    public String getBotUserName() {return  properties.getProperty("telegram.bot.username");}
+    public String getBotToken() {return properties.getProperty("telegram.bot.token");}
     public String getLocale() {
         return properties.getProperty("locale");
     }

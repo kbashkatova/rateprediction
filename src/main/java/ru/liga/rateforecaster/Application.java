@@ -1,6 +1,12 @@
 package ru.liga.rateforecaster;
 
-import ru.liga.rateforecaster.forecast.UserRequestForecastGenerator;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import ru.liga.rateforecaster.telegrambot.Bot;
+import ru.liga.rateforecaster.utils.AppConfig;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 
 /**
@@ -8,8 +14,12 @@ import ru.liga.rateforecaster.forecast.UserRequestForecastGenerator;
  */
 public class Application {
     public static void main(String[] args) {
-        while (true) {
-            System.out.println(UserRequestForecastGenerator.proceedUserRequest());
+        try {
+            TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+            botsApi.registerBot(new Bot(ResourceBundle.getBundle("messages/messages",
+                    new Locale(AppConfig.getInstance().getLocale()))));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -4,8 +4,9 @@ package ru.liga.rateforecaster.enums;
  * An enumeration representing different rate types for currency forecasting.
  */
 public enum RateType {
-    TOMORROW("tomorrow"),
-    WEEK("week");
+    DAY("day"),
+    WEEK("week"),
+    MONTH("month");
 
     private final String description;
 

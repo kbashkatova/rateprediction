@@ -8,7 +8,9 @@ import ru.liga.rateforecaster.utils.AppConfig;
 public enum Currency {
     EUR("EUR", AppConfig.getInstance().getEurFilePath()),
     TRY("TRY",  AppConfig.getInstance().getTryFilePath()),
-    USD("USD", AppConfig.getInstance().getUsdFilePath());
+    USD("USD", AppConfig.getInstance().getUsdFilePath()),
+    BGN("BGN", AppConfig.getInstance().getBgnFilePath()),
+    AMD("AMD", AppConfig.getInstance().getAmdFilePath());
 
     private final String code;
     private final String filePath;
