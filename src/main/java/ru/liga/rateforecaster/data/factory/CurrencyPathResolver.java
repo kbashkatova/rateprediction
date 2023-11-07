@@ -11,19 +11,13 @@ public class CurrencyPathResolver {
     }
 
     public String getPath(Currency currency) {
-        switch (currency) {
-            case EUR:
-                return appConfig.getEurFilePath();
-            case TRY:
-                return appConfig.getTryFilePath();
-            case USD:
-                return appConfig.getUsdFilePath();
-            case BGN:
-                return appConfig.getBgnFilePath();
-            case AMD:
-                return appConfig.getAmdFilePath();
-            default:
-                throw new IllegalArgumentException("Unsupported currency: " + currency);
-        }
+        return switch (currency) {
+            case EUR -> appConfig.getEurFilePath();
+            case TRY -> appConfig.getTryFilePath();
+            case USD -> appConfig.getUsdFilePath();
+            case BGN -> appConfig.getBgnFilePath();
+            case AMD -> appConfig.getAmdFilePath();
+            default -> throw new IllegalArgumentException("Unsupported currency: " + currency);
+        };
     }
 }

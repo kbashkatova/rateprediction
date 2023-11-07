@@ -20,7 +20,6 @@ import ru.liga.rateforecaster.model.ParsedRequest;
 
 import java.awt.*;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Implementation of the {@link OutputGenerator} interface for generating charts.

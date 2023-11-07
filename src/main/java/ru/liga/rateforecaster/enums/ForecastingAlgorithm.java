@@ -7,5 +7,5 @@ public enum ForecastingAlgorithm {
     AVERAGE,
     YEAR,
     MIST,
-    MOON;
+    MOON
 }

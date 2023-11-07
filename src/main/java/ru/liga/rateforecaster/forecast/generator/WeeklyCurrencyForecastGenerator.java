@@ -4,6 +4,7 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.liga.rateforecaster.data.factory.GenericCurrencyProcessorFactory;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.formatter.ResultFormatter;
 import ru.liga.rateforecaster.enums.Currency;
@@ -30,7 +31,10 @@ public class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator {
     private final RatePredictionAlgorithm ratePredictionAlgorithm;
     private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
 
-    public WeeklyCurrencyForecastGenerator(ResultFormatter resultFormatter, RatePredictionAlgorithm ratePredictionAlgorithm) {
+    public WeeklyCurrencyForecastGenerator(ResultFormatter resultFormatter,
+                                           RatePredictionAlgorithm ratePredictionAlgorithm,
+                                           GenericCurrencyProcessorFactory genericCurrencyProcessorFactory) {
+        super(genericCurrencyProcessorFactory);
         this.resultFormatter = resultFormatter;
         this.ratePredictionAlgorithm = ratePredictionAlgorithm;
     }

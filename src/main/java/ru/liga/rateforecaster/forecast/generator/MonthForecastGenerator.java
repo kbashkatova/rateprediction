@@ -3,6 +3,7 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.liga.rateforecaster.data.factory.GenericCurrencyProcessorFactory;
 import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.formatter.ResultFormatter;
@@ -29,7 +30,10 @@ public class MonthForecastGenerator extends CurrencyForecastGenerator {
     private final static int DAYS_IN_MONTH_FORECAST = 30;
     private final RatePredictionAlgorithm ratePredictionAlgorithm;
 
-    public MonthForecastGenerator(ResultFormatter resultFormatter, RatePredictionAlgorithm ratePredictionAlgorithm) {
+    public MonthForecastGenerator(ResultFormatter resultFormatter,
+                                  RatePredictionAlgorithm ratePredictionAlgorithm,
+                                  GenericCurrencyProcessorFactory genericCurrencyProcessorFactory) {
+        super(genericCurrencyProcessorFactory);
         this.resultFormatter = resultFormatter;
         this.ratePredictionAlgorithm = ratePredictionAlgorithm;
     }

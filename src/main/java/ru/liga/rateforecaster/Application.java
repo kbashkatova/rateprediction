@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.liga.rateforecaster.forecast.UserRequestForecastGenerator;
+import ru.liga.rateforecaster.forecast.algorithm.factory.GenericPredictionAlgorithm;
 import ru.liga.rateforecaster.telegrambot.Bot;
 import ru.liga.rateforecaster.telegrambot.dialoghandler.TelegramBotDialogHandlerImpl;
 import ru.liga.rateforecaster.telegrambot.dialoghandler.TelegramBotKeyboardFactory;
@@ -25,8 +26,9 @@ public class Application {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("messages/messages");
             bot.setDialogHandler(new TelegramBotDialogHandlerImpl(
                     new TelegramBotRequestHandler(bot, new TelegramBotKeyboardFactory(resourceBundle), resourceBundle),
-                    new TelegramMessageSenderImpl(bot, resourceBundle, new UserRequestForecastGenerator(resourceBundle))
-            ));
+                    new TelegramMessageSenderImpl(bot, resourceBundle,
+                            new UserRequestForecastGenerator(resourceBundle, new GenericPredictionAlgorithm())
+            )));
             botsApi.registerBot(bot);
         } catch (Exception e) {
             logger.error("An error occurred during bot registration", e);

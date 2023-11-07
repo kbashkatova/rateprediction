@@ -28,9 +28,7 @@ public class MoonPredictionAlgorithmTest {
     @Test
     void calculateRateForDate_WhenLastMonthDataExists_ReturnsPredictedRate() {
         List<CurrencyData> lastMonthData = new ArrayList<>();
-        IntStream.rangeClosed(1, 30).forEach(day -> {
-            lastMonthData.add(new CurrencyData(LocalDate.of(2023, 3, day), new BigDecimal("1.0")));
-        });
+        IntStream.rangeClosed(1, 30).forEach(day -> lastMonthData.add(new CurrencyData(LocalDate.of(2023, 3, day), new BigDecimal("1.0"))));
         double expectedRate = 1.0;
 
         MoonPredictionAlgorithm predictionAlgorithm = new MoonPredictionAlgorithm();
@@ -42,9 +40,7 @@ public class MoonPredictionAlgorithmTest {
     @Test
     void calculateRateForDate_WhenLastMonthDataDoesNotExist_ReturnsPredictedRate() {
         List<CurrencyData> lastMonthData = new ArrayList<>();
-        IntStream.rangeClosed(1, 30).forEach(day -> {
-            lastMonthData.add(new CurrencyData(LocalDate.of(2023, 4, day), new BigDecimal("1.0")));
-        });
+        IntStream.rangeClosed(1, 30).forEach(day -> lastMonthData.add(new CurrencyData(LocalDate.of(2023, 4, day), new BigDecimal("1.0"))));
         double expectedRate = 1.0;
         MoonPredictionAlgorithm predictionAlgorithm = new MoonPredictionAlgorithm();
 
@@ -56,8 +52,6 @@ public class MoonPredictionAlgorithmTest {
     @Test
     void calculateRateForDate_WhenNoDataAvailable_ThrowsInvalidPredictionDataException() {
         List<CurrencyData> emptyData = new ArrayList<>();
-        org.junit.jupiter.api.Assertions.assertThrows(InvalidPredictionDataException.class, () -> {
-            predictionAlgorithm.calculateRateForDate(emptyData, targetDate);
-        });
+        org.junit.jupiter.api.Assertions.assertThrows(InvalidPredictionDataException.class, () -> predictionAlgorithm.calculateRateForDate(emptyData, targetDate));
     }
 }

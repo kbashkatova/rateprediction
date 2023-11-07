@@ -1,8 +1,5 @@
 package ru.liga.rateforecaster.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

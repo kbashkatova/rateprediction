@@ -3,6 +3,7 @@ package ru.liga.rateforecaster.forecast;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.liga.rateforecaster.forecast.algorithm.factory.GenericPredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.generator.CurrencyForecastGenerator;
 import ru.liga.rateforecaster.forecast.generator.factory.CurrencyForecastGeneratorFactoryImpl;
 import ru.liga.rateforecaster.model.ErrorMessage;
@@ -22,8 +23,11 @@ public class UserRequestForecastGenerator {
     private static final Logger logger = LoggerFactory.getLogger(UserRequestForecastGenerator.class);
     private final ResourceBundle resourceBundle;
 
-    public UserRequestForecastGenerator(ResourceBundle resourceBundle) {
+    private final GenericPredictionAlgorithm genericPredictionAlgorithm;
+
+    public UserRequestForecastGenerator(ResourceBundle resourceBundle, GenericPredictionAlgorithm genericPredictionAlgorithm) {
         this.resourceBundle = resourceBundle;
+        this.genericPredictionAlgorithm = genericPredictionAlgorithm;
     }
     /**
      * Proceeds with the user's request, generates a forecast, and returns a FormattedResult.
@@ -49,7 +53,7 @@ public class UserRequestForecastGenerator {
      */
     private FormattedResult generateForecast(ParsedRequest parsedRequest) {
         try {
-            final CurrencyForecastGenerator forecast = new CurrencyForecastGeneratorFactoryImpl().createGenerator(parsedRequest, resourceBundle);
+            final CurrencyForecastGenerator forecast = new CurrencyForecastGeneratorFactoryImpl(genericPredictionAlgorithm).createGenerator(parsedRequest, resourceBundle);
             return forecast.generateForecast(parsedRequest);
         } catch (CsvValidationException e) {
             logger.error("CSV validation error: {}", e.getMessage(), e);

@@ -43,7 +43,6 @@ public class ChartOutputGeneratorTest {
 
 
     private List<CurrencyDataForResultOutput> generateTestData() {
-        List<CurrencyDataForResultOutput> testData = new ArrayList<>();
-        return testData;
+        return new ArrayList<>();
     }
 }

@@ -19,6 +19,11 @@ import java.text.ParseException;
  */
 public abstract class CurrencyForecastGenerator {
     private static final Logger logger = LoggerFactory.getLogger(CurrencyForecastGenerator.class);
+    private final GenericCurrencyProcessorFactory genericCurrencyProcessorFactory;
+
+    protected CurrencyForecastGenerator(GenericCurrencyProcessorFactory genericCurrencyProcessorFactory) {
+        this.genericCurrencyProcessorFactory = genericCurrencyProcessorFactory;
+    }
 
 
     /**
@@ -42,7 +47,7 @@ public abstract class CurrencyForecastGenerator {
      */
     protected CurrencyDataProcessor createDataProcessor(Currency currency) {
         try {
-            return GenericCurrencyProcessorFactory.getFactory(currency).createCurrencyDataProcessor();
+            return genericCurrencyProcessorFactory.getFactory(currency).createCurrencyDataProcessor();
         } catch (RuntimeException e) {
             logger.error("Failed to create data processor: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to create data processor", e);

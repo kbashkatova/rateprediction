@@ -8,10 +8,14 @@ import ru.liga.rateforecaster.utils.AppConfig;
  * A factory for creating instances of CurrencyDataProcessor.
  */
 public class GenericCurrencyProcessorFactory implements CurrencyProcessorFactory {
-    private final String filePath;
+    private String filePath;
 
     public GenericCurrencyProcessorFactory(String filePath) {
         this.filePath = filePath;
+    }
+
+    public GenericCurrencyProcessorFactory() {
+
     }
 
     @Override
@@ -25,11 +29,11 @@ public class GenericCurrencyProcessorFactory implements CurrencyProcessorFactory
      * @param currency the currency for which to create a factory
      * @return a CurrencyProcessorFactory for the specified currency
      */
-    public static CurrencyProcessorFactory getFactory(Currency currency) {
+    public  CurrencyProcessorFactory getFactory(Currency currency) {
         return new GenericCurrencyProcessorFactory(getPath(currency));
     }
 
-    private static String getPath(Currency currency) {
+    private String getPath(Currency currency) {
         return new CurrencyPathResolver(AppConfig.getInstance()).getPath(currency);
     }
 }

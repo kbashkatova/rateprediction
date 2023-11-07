@@ -22,20 +22,15 @@ public class GenericPredictionAlgorithm {
      * @return A rate prediction algorithm instance based on the user's request.
      * @throws IllegalArgumentException if the specified algorithm type is invalid.
      */
-    public static RatePredictionAlgorithm createAlgorithm(ParsedRequest parsedRequest) {
+    public RatePredictionAlgorithm createAlgorithm(ParsedRequest parsedRequest) {
         ForecastingAlgorithm algorithm = parsedRequest.algorithm();
 
-        switch (algorithm) {
-            case AVERAGE:
-                return new AveragePredictionAlgorithm();
-            case YEAR:
-                return new YearPredictionAlgorithm();
-            case MIST:
-                return new MistPredictionAlgorithm();
-            case MOON:
-                return new MoonPredictionAlgorithm();
-            default:
-                throw new IllegalArgumentException("Invalid algorithm: " + algorithm);
-        }
+        return switch (algorithm) {
+            case AVERAGE -> new AveragePredictionAlgorithm();
+            case YEAR -> new YearPredictionAlgorithm();
+            case MIST -> new MistPredictionAlgorithm();
+            case MOON -> new MoonPredictionAlgorithm();
+            default -> throw new IllegalArgumentException("Invalid algorithm: " + algorithm);
+        };
     }
 }

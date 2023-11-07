@@ -65,17 +65,15 @@ public class StringOutputGenerator implements OutputGenerator {
     }
 
     private FormattedResult generateWeekOutput(Currency currency, List<CurrencyData> forecastData) {
-        final StringBuilder formattedResult = new StringBuilder();
-        formattedResult.append(String.format("rate %s week%n", currency));
-        formattedResult.append(generateListOfData(forecastData));
-        return new FormattedResult(formattedResult.toString());
+        String formattedResult = String.format("rate %s week%n", currency) +
+                generateListOfData(forecastData);
+        return new FormattedResult(formattedResult);
     }
 
     private FormattedResult generateMonthOutput(Currency currency, List<CurrencyData> forecastData) {
-        final StringBuilder formattedResult = new StringBuilder();
-        formattedResult.append(String.format("rate %s month%n", currency));
-        formattedResult.append(generateListOfData(forecastData));
-        return new FormattedResult(formattedResult.toString());
+        String formattedResult = String.format("rate %s month%n", currency) +
+                generateListOfData(forecastData);
+        return new FormattedResult(formattedResult);
     }
 
     private String generateListOfData(List<CurrencyData> forecastData) {

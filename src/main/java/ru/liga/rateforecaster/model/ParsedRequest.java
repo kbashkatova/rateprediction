@@ -1,9 +1,10 @@
 package ru.liga.rateforecaster.model;
 
 import lombok.Builder;
-import lombok.Getter;
-import ru.liga.rateforecaster.enums.*;
-import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
+import ru.liga.rateforecaster.enums.Currency;
+import ru.liga.rateforecaster.enums.ForecastingAlgorithm;
+import ru.liga.rateforecaster.enums.OutputType;
+import ru.liga.rateforecaster.enums.RateType;
 
 import java.time.LocalDate;
 import java.util.List;
