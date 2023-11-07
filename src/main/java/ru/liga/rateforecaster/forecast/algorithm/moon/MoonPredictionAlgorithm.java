@@ -3,7 +3,6 @@ package ru.liga.rateforecaster.forecast.algorithm.moon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.liga.rateforecaster.exception.InvalidPredictionDataException;
-import ru.liga.rateforecaster.forecast.algorithm.average.AveragePredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.model.CurrencyData;
 import ru.liga.rateforecaster.utils.DateUtils;
@@ -31,19 +30,20 @@ public class MoonPredictionAlgorithm extends RatePredictionAlgorithm {
      */
     @Override
     public CurrencyData calculateRateForDate(List<CurrencyData> currencyDataList, LocalDate targetDate) {
+        logger.info("Calculating currency rate for date: {}", targetDate);
         try {
             List<CurrencyData> lastMonthData = getLastMonthData(currencyDataList, targetDate);
             int n = lastMonthData.size();
             double[] x = new double[n];
             double[] y = new double[n];
             for (int i = 0; i < n; i++) {
-                x[i] = lastMonthData.get(i).getDate().getDayOfMonth();
-                y[i] = lastMonthData.get(i).getRate().doubleValue();
+                x[i] = lastMonthData.get(i).date().getDayOfMonth();
+                y[i] = lastMonthData.get(i).rate().doubleValue();
             }
             LinearRegression linearRegression = new LinearRegression(x, y);
 
             double predictedRate = linearRegression.predict(targetDate.getDayOfMonth());
-
+            logger.info("Currency rate calculated successfully.");
             return new CurrencyData(targetDate, BigDecimal.valueOf(predictedRate));
         } catch (RuntimeException e) {
             logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage(), e);
@@ -59,18 +59,19 @@ public class MoonPredictionAlgorithm extends RatePredictionAlgorithm {
      * @param targetDate       The target date for which the data is retrieved.
      * @return A list of currency data for the last month before the target date or the last 30 days if the target date is not found.
      */
-    public List<CurrencyData> getLastMonthData(List<CurrencyData> currencyDataList, LocalDate targetDate) {
+    private List<CurrencyData> getLastMonthData(List<CurrencyData> currencyDataList, LocalDate targetDate) {
+        logger.info("Retrieving data for the last month before target date: {}", targetDate);
         boolean targetDateExists = currencyDataList.stream()
-                .anyMatch(data -> data.getDate().isEqual(targetDate));
+                .anyMatch(data -> data.date().isEqual(targetDate));
 
         if (targetDateExists) {
             LocalDate lastMonthDate = DateUtils.getLastMonthDate(targetDate);
             return currencyDataList.stream()
-                    .filter(data -> data.getDate().isAfter(lastMonthDate))
+                    .filter(data -> data.date().isAfter(lastMonthDate))
                     .collect(Collectors.toList());
         } else {
             return currencyDataList.stream()
-                    .sorted(Comparator.comparing(CurrencyData::getDate).reversed())
+                    .sorted(Comparator.comparing(CurrencyData::date).reversed())
                     .limit(DAYS_IN_MONTH)
                     .collect(Collectors.toList());
         }

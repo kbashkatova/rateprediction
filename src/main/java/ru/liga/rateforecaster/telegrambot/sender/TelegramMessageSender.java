@@ -40,4 +40,6 @@ public interface TelegramMessageSender {
      * @param chatId       The chat ID of the user to send the error message to.
      */
     void sendError(String errorMessage, Long chatId);
+
+    void exitProgram(String exitMessage, Update update);
 }

@@ -2,8 +2,8 @@ package ru.liga.rateforecaster.forecast.generator;
 
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.liga.rateforecaster.enums.Currency;
-import ru.liga.rateforecaster.forecast.algorithm.factory.GenericPredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.formatter.ResultFormatter;
 import ru.liga.rateforecaster.formatter.model.CurrencyDataForResultOutput;
@@ -23,13 +23,15 @@ import java.util.List;
  * based on user requests. It extends the CurrencyForecastGenerator and provides specific logic for monthly forecasts.
  */
 public class MonthForecastGenerator extends CurrencyForecastGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(CurrencyForecastGenerator.class);
 
     private final ResultFormatter resultFormatter;
     private final static int DAYS_IN_MONTH_FORECAST = 30;
+    private final RatePredictionAlgorithm ratePredictionAlgorithm;
 
-    public MonthForecastGenerator(Logger logger, ResultFormatter resultFormatter) {
-        super(logger);
+    public MonthForecastGenerator(ResultFormatter resultFormatter, RatePredictionAlgorithm ratePredictionAlgorithm) {
         this.resultFormatter = resultFormatter;
+        this.ratePredictionAlgorithm = ratePredictionAlgorithm;
     }
 
     /**
@@ -42,34 +44,28 @@ public class MonthForecastGenerator extends CurrencyForecastGenerator {
      */
     @Override
     public FormattedResult generateForecast(ParsedRequest parsedRequest) throws CsvValidationException, IOException {
-
-        final LocalDate forecastStartEnd = DateUtils.getLastDayOfMonthForecast(
-                parsedRequest.getDate().orElseGet(DateUtils::getCurrentDate));
+        logger.info("Generating monthly forecast...");
+        final LocalDate forecastStartEnd = DateUtils.getLastDayOfMonthForecast(parsedRequest.date().orElseGet(DateUtils::getCurrentDate));
         final List<CurrencyDataForResultOutput> currencyDataForResultOutputs = new ArrayList<>();
-        for (Currency currency :
-                parsedRequest.getCurrencies()) {
+        for (Currency currency : parsedRequest.currencies()) {
             final LinkedList<CurrencyData> currencyDataList = createDataProcessor(currency).readCurrencyDataFromResources();
-            List<CurrencyData> forecastData = calculateMonthlyForecast(parsedRequest, currencyDataList, forecastStartEnd);
+            List<CurrencyData> forecastData = calculateMonthlyForecast(currencyDataList, forecastStartEnd);
             currencyDataForResultOutputs.add(new CurrencyDataForResultOutput(currency, forecastData));
         }
-        return resultFormatter.format(
-                currencyDataForResultOutputs,
-                parsedRequest);
+        logger.info("Monthly forecast generated successfully.");
+        return resultFormatter.format(currencyDataForResultOutputs, parsedRequest);
     }
 
     /**
      * Calculates the currency forecast for a month.
      *
-     * @param parsedRequest       The parsed user request.
-     * @param currencyDataList    The list of currency data.
-     * @param forecastPeriodEnd   The end date of the forecast period.
+     * @param currencyDataList  The list of currency data.
+     * @param forecastPeriodEnd The end date of the forecast period.
      * @return A list of CurrencyData representing the currency forecasts for the month.
      */
-    protected List<CurrencyData> calculateMonthlyForecast(ParsedRequest parsedRequest, LinkedList<CurrencyData> currencyDataList,
-                                                          LocalDate forecastPeriodEnd) {
-        RatePredictionAlgorithm algorithm = GenericPredictionAlgorithm.createAlgorithm(parsedRequest);
-        final CurrencyData rateForDate = algorithm
-                .getRateForDate(currencyDataList, forecastPeriodEnd);
+    private List<CurrencyData> calculateMonthlyForecast(LinkedList<CurrencyData> currencyDataList, LocalDate forecastPeriodEnd) {
+        logger.info("Calculating monthly forecast...");
+        final CurrencyData rateForDate = ratePredictionAlgorithm.getRateForDate(currencyDataList, forecastPeriodEnd);
 
         if (rateForDate == null) {
             List<CurrencyData> resultData = new ArrayList<>();
@@ -79,12 +75,12 @@ public class MonthForecastGenerator extends CurrencyForecastGenerator {
                 targetDates.add(currentDate);
                 currentDate = DateUtils.getPreviousDate(currentDate);
             }
-            for (LocalDate date:
-                    targetDates) {
-                resultData.add(algorithm.calculateRateForDate(currencyDataList, date));
+            for (LocalDate date : targetDates) {
+                resultData.add(ratePredictionAlgorithm.calculateRateForDate(currencyDataList, date));
             }
             return resultData;
         }
+        logger.info("Monthly forecast calculated successfully.");
         return currencyDataList.subList(0, DAYS_IN_MONTH_FORECAST);
     }
 }

@@ -2,9 +2,7 @@ package ru.liga.rateforecaster.forecast.algorithm;
 
 import ru.liga.rateforecaster.model.CurrencyData;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -23,7 +21,7 @@ public abstract class RatePredictionAlgorithm {
      */
     public CurrencyData getRateForDate(List<CurrencyData> currencyDataList, LocalDate targetDate) {
         return currencyDataList.stream()
-                .filter(data -> data.getDate().isEqual(targetDate))
+                .filter(data -> data.date().isEqual(targetDate))
                 .findFirst()
                 .orElse(null);
     }

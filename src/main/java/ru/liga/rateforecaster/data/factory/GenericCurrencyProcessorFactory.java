@@ -2,6 +2,7 @@ package ru.liga.rateforecaster.data.factory;
 
 import ru.liga.rateforecaster.data.processor.CurrencyDataProcessor;
 import ru.liga.rateforecaster.enums.Currency;
+import ru.liga.rateforecaster.utils.AppConfig;
 
 /**
  * A factory for creating instances of CurrencyDataProcessor.
@@ -25,7 +26,10 @@ public class GenericCurrencyProcessorFactory implements CurrencyProcessorFactory
      * @return a CurrencyProcessorFactory for the specified currency
      */
     public static CurrencyProcessorFactory getFactory(Currency currency) {
-        final Currency currencyEnum = Currency.valueOf(currency.getCode());
-        return new GenericCurrencyProcessorFactory(currencyEnum.getFilePath());
+        return new GenericCurrencyProcessorFactory(getPath(currency));
+    }
+
+    private static String getPath(Currency currency) {
+        return new CurrencyPathResolver(AppConfig.getInstance()).getPath(currency);
     }
 }

@@ -35,7 +35,7 @@ public class MistPredictionAlgorithmTest {
         currencyDataList.add(new CurrencyData(targetDate, new BigDecimal("1.0")));
 
         CurrencyData result = predictionAlgorithm.calculateRateForDate(currencyDataList, targetDate);
-        assertEquals(new BigDecimal("1.0"), result.getRate());
+        assertEquals(new BigDecimal("1.0"), result.rate());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class MistPredictionAlgorithmTest {
         currencyDataList.add(new CurrencyData(targetDate.minusDays(1), new BigDecimal("2.0")));
         currencyDataList.add(new CurrencyData(targetDate.minusDays(2), new BigDecimal("3.0")));
         CurrencyData result = predictionAlgorithm.calculateRateForDate(currencyDataList, targetDate);
-        assertEquals(new BigDecimal("2.0"), result.getRate());
+        assertEquals(new BigDecimal("2.0"), result.rate());
     }
 
     @Test

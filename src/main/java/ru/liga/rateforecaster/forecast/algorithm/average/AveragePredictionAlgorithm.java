@@ -14,13 +14,15 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 /**
  * The AveragePredictionAlgorithm class represents an algorithm for calculating currency rates based on a 7-day average.
  * It extends the RatePredictionAlgorithm class and provides the logic for calculating rates and filling missing data.
  */
 public class AveragePredictionAlgorithm extends RatePredictionAlgorithm {
-    private static final int AVERAGE_CALCULATION_WINDOW = 7;
     private static final Logger logger = LoggerFactory.getLogger(AveragePredictionAlgorithm.class);
+    private static final int AVERAGE_CALCULATION_WINDOW = 7;
 
     /**
      * Calculates the currency rate for the specified date using a 7-day average rate.
@@ -31,14 +33,21 @@ public class AveragePredictionAlgorithm extends RatePredictionAlgorithm {
      */
     @Override
     public CurrencyData calculateRateForDate(List<CurrencyData> currencyData, LocalDate targetDate) {
+        if (currencyData == null || currencyData.isEmpty()) {
+            throw new IllegalArgumentException("currencyData cannot be null or empty.");
+        }
         BigDecimal rateForDate;
-        LinkedList<CurrencyData> currencyDataLinkedList = new LinkedList<>();
-        currencyDataLinkedList.addAll(currencyData);
-        currencyData = fillMissingDates(currencyDataLinkedList, currencyData.get(0).getDate(), targetDate);
-        rateForDate = getAverage(currencyData, targetDate);
+        LinkedList<CurrencyData> currencyDataLinkedList = new LinkedList<>(currencyData);
+        if (nonNull(currencyData.get(0))) {
+            currencyData = fillMissingDates(currencyDataLinkedList, currencyData.get(0).date(), targetDate);
+            rateForDate = getAverage(currencyData, targetDate);
+        } else {
+            throw new IllegalArgumentException("currencyData's first element is null.");
+        }
+
 
         if (rateForDate != null) {
-            return currencyData.stream().filter(data -> data.getDate().equals(targetDate)).findAny().orElseThrow(
+            return currencyData.stream().filter(data -> data.date().equals(targetDate)).findAny().orElseThrow(
                     () -> new InvalidPredictionDataException("Failed to calculate the rate for the specified date"));
         } else {
             throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
@@ -48,8 +57,8 @@ public class AveragePredictionAlgorithm extends RatePredictionAlgorithm {
     private BigDecimal getAverage(List<CurrencyData> currencyDataList, LocalDate targetDate) {
         try {
             final List<CurrencyData> previousData = currencyDataList.stream()
-                    .filter(data -> data.getRate().compareTo(BigDecimal.ZERO) > 0 &&
-                            data.getDate().isBefore(targetDate))
+                    .filter(data -> data.rate().compareTo(BigDecimal.ZERO) > 0 &&
+                            data.date().isBefore(targetDate))
                     .limit(AVERAGE_CALCULATION_WINDOW)
                     .toList();
 
@@ -59,7 +68,7 @@ public class AveragePredictionAlgorithm extends RatePredictionAlgorithm {
             }
 
             return previousData.stream()
-                    .map(CurrencyData::getRate)
+                    .map(CurrencyData::rate)
                     .filter(rate -> rate.compareTo(BigDecimal.ZERO) > 0)
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     .divide(BigDecimal.valueOf(previousData.size()), 2, RoundingMode.HALF_UP);
@@ -71,7 +80,7 @@ public class AveragePredictionAlgorithm extends RatePredictionAlgorithm {
 
 
 
-    public LinkedList<CurrencyData> fillMissingDates(LinkedList<CurrencyData> currencyDataList,
+    private LinkedList<CurrencyData> fillMissingDates(LinkedList<CurrencyData> currencyDataList,
                                                      LocalDate currentCurrencyDataListDate,
                                                      LocalDate targetDate) {
         try {

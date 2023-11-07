@@ -1,9 +1,10 @@
 package ru.liga.rateforecaster.telegrambot.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.liga.rateforecaster.enums.Algorithm;
 import ru.liga.rateforecaster.enums.Currency;
+import ru.liga.rateforecaster.enums.ForecastingAlgorithm;
 import ru.liga.rateforecaster.enums.OutputType;
 import ru.liga.rateforecaster.enums.RateType;
 
@@ -17,11 +18,16 @@ import java.util.Optional;
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 public class BotState {
     private List<Currency> currencies = new ArrayList<>();
     private RateType period;
-    private Optional<LocalDate> date = Optional.empty();
-    private Algorithm algorithm;
+    private LocalDate date;
+    private ForecastingAlgorithm algorithm;
     private OutputType outputType;
     private State state;
+
+    public Optional<LocalDate> getDate() {
+        return Optional.ofNullable(date);
+    }
 }

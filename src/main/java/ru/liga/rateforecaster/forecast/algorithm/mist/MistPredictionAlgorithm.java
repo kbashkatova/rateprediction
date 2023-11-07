@@ -26,7 +26,7 @@ public class MistPredictionAlgorithm extends RatePredictionAlgorithm {
      * Creates a MistPredictionAlgorithm with a default random number generator.
      */
     public MistPredictionAlgorithm() {
-        this.randomNumberGenerator = new RandomNumberGeneratorImpl();
+        this.randomNumberGenerator = new DefaultRandomNumberGenerator();
     }
 
     /**
@@ -63,9 +63,8 @@ public class MistPredictionAlgorithm extends RatePredictionAlgorithm {
     }
 
     private Optional<CurrencyData> findTargetDateRate(List<CurrencyData> currencyDataList, LocalDate date) {
-        return Optional.ofNullable(currencyDataList.stream()
-                .filter(data -> data.getDate().isEqual(date))
-                .findFirst()
-                .orElse(null));
+        return currencyDataList.stream()
+                .filter(data -> data.date().isEqual(date))
+                .findFirst();
     }
 }

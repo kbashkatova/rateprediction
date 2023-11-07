@@ -24,14 +24,16 @@ import java.util.ResourceBundle;
  * The implementation of the TelegramMessageSender interface for sending messages in a Telegram bot.
  */
 public class TelegramMessageSenderImpl implements TelegramMessageSender {
-
+    private static final Logger log = LoggerFactory.getLogger(Bot.class);
     private final Bot bot;
     private final ResourceBundle resourceBundle;
-    private static final Logger log = LoggerFactory.getLogger(Bot.class);
+    private final UserRequestForecastGenerator userRequestForecastGenerator;
 
-    public TelegramMessageSenderImpl(Bot bot, ResourceBundle resourceBundle) {
+
+    public TelegramMessageSenderImpl(Bot bot, ResourceBundle resourceBundle, UserRequestForecastGenerator userRequestForecastGenerator) {
         this.bot = bot;
         this.resourceBundle = resourceBundle;
+        this.userRequestForecastGenerator = userRequestForecastGenerator;
     }
 
     /**
@@ -40,8 +42,10 @@ public class TelegramMessageSenderImpl implements TelegramMessageSender {
      * @param botState The current state of the bot.
      * @return A formatted result based on the user's request.
      */
+    @Override
     public FormattedResult handleUserRequest(BotState botState) {
-        return UserRequestForecastGenerator.proceedUserRequest(botState);
+        log.info("Handling user request: {}", botState);
+        return userRequestForecastGenerator.proceedUserRequest(botState);
     }
 
     /**
@@ -50,7 +54,9 @@ public class TelegramMessageSenderImpl implements TelegramMessageSender {
      * @param result The formatted result to send.
      * @param update The update object to reply to.
      */
+    @Override
     public void sendMessageResult(FormattedResult result, Update update) {
+        log.info("Sending a result message to the user.");
         if (result.getTextResult() != null) {
             sendMessage(result.getTextResult(), update);
         } else if (result.getChartImage() != null) {
@@ -61,7 +67,7 @@ public class TelegramMessageSenderImpl implements TelegramMessageSender {
                 sendError("error.failedToSendChart", update.getMessage().getChatId());
             }
         } else if (result.getErrorMessage() != null) {
-            sendMessage(result.getErrorMessage().getErrorMessageText(), update);
+            sendMessage(result.getErrorMessage().errorMessageText(), update);
         }
     }
 
@@ -71,7 +77,9 @@ public class TelegramMessageSenderImpl implements TelegramMessageSender {
      * @param message The text message to send.
      * @param update  The update object to reply to.
      */
+    @Override
     public void sendMessage(String message, Update update) {
+        log.info("Sending a message to the user.");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(update.getMessage().getChatId());
         sendMessage.setText(message);
@@ -124,7 +132,9 @@ public class TelegramMessageSenderImpl implements TelegramMessageSender {
      * @param errorMessage The error message to send.
      * @param chatId       The chat ID of the user to send the error message to.
      */
+    @Override
     public void sendError(String errorMessage, Long chatId) {
+        log.error("Sending an error message to the user: {}", errorMessage);
         String localizedErrorMessage = resourceBundle.getString(errorMessage);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
@@ -135,5 +145,18 @@ public class TelegramMessageSenderImpl implements TelegramMessageSender {
         } catch (TelegramApiException e) {
             log.error("Failed to send error message", e);
         }
+    }
+
+    /**
+     * Exits the program with a provided exit message.
+     *
+     * @param exitMessage The exit message.
+     * @param update      The update for the exit message.
+     */
+    @Override
+    public void exitProgram(String exitMessage, Update update) {
+        log.info("Exiting the program: {}", exitMessage);
+        sendMessage(exitMessage, update);
+        System.exit(0);
     }
 }

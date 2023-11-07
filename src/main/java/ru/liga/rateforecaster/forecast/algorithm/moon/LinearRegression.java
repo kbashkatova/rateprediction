@@ -1,9 +1,30 @@
 package ru.liga.rateforecaster.forecast.algorithm.moon;
 
 public class LinearRegression {
-    private final double intercept, slope;
+    /**
+     * The y-intercept (alpha) of the best-fit line y = alpha + beta * x.
+     */
+    private final double intercept;
+
+    /**
+     * The slope (beta) of the best-fit line y = alpha + beta * x.
+     */
+    private final double slope;
+
+    /**
+     * The coefficient of determination (R^2).
+     */
     private final double r2;
-    private final double svar0, svar1;
+
+    /**
+     * An estimate of the variance for alpha.
+     */
+    private final double svar0;
+
+    /**
+     * An estimate of the variance for beta.
+     */
+    private final double svar1;
 
     /**
      * Performs a linear regression on the data points {@code (y[i], x[i])}.

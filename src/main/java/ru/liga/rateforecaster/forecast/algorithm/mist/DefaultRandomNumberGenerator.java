@@ -4,10 +4,10 @@ import java.util.Random;
 
 
 /**
- * The RandomNumberGeneratorImpl class is an implementation of the {@link RandomNumberGenerator} interface.
+ * The DefaultRandomNumberGenerator class is an implementation of the {@link RandomNumberGenerator} interface.
  * It provides random number generation functionality using the Java built-in Random class.
  */
-public class RandomNumberGeneratorImpl implements RandomNumberGenerator {
+class DefaultRandomNumberGenerator implements RandomNumberGenerator {
     private final Random random = new Random();
 
     /**

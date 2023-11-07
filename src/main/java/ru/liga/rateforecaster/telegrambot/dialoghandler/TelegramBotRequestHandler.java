@@ -12,19 +12,20 @@ import ru.liga.rateforecaster.telegrambot.Bot;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static ru.liga.rateforecaster.telegrambot.dialoghandler.TelegramBotKeyboardFactory.*;
-import static ru.liga.rateforecaster.telegrambot.dialoghandler.TelegramBotKeyboardFactory.createPeriodOrDateKeyboard;
 
 /**
  * Handles sending various types of keyboard messages in the Telegram bot.
  */
 public class TelegramBotRequestHandler {
-    private final Bot bot;
-    private final ResourceBundle resourceBundle;
     private static final Logger logger = LoggerFactory.getLogger(TelegramBotRequestHandler.class);
+    private final Bot bot;
+    private final TelegramBotKeyboardFactory telegramBotKeyboardFactory;
+    private final ResourceBundle resourceBundle;
 
-    public TelegramBotRequestHandler(Bot bot, ResourceBundle resourceBundle) {
+
+    public TelegramBotRequestHandler(Bot bot, TelegramBotKeyboardFactory telegramBotKeyboardFactory, ResourceBundle resourceBundle) {
         this.bot = bot;
+        this.telegramBotKeyboardFactory = telegramBotKeyboardFactory;
         this.resourceBundle = resourceBundle;
     }
 
@@ -38,7 +39,7 @@ public class TelegramBotRequestHandler {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(update.getMessage().getChatId().toString());
         sendMessage.setText(resourceBundle.getString("forecast.output.type.message"));
-        sendMessage.setReplyMarkup(createOutputKeyboard(period));
+        sendMessage.setReplyMarkup(telegramBotKeyboardFactory.createOutputKeyboard(period));
 
         try {
             bot.execute(sendMessage);
@@ -56,7 +57,7 @@ public class TelegramBotRequestHandler {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(update.getMessage().getChatId().toString());
         sendMessage.setText(resourceBundle.getString("choose.algorithm.message"));
-        sendMessage.setReplyMarkup(createAlgorithmKeyboard());
+        sendMessage.setReplyMarkup(telegramBotKeyboardFactory.createAlgorithmKeyboard());
 
         try {
             bot.execute(sendMessage);
@@ -75,7 +76,7 @@ public class TelegramBotRequestHandler {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(update.getMessage().getChatId().toString());
         sendMessage.setText(resourceBundle.getString("choose.currencies"));
-        sendMessage.setReplyMarkup(createCurrencyKeyboard(currencies));
+        sendMessage.setReplyMarkup(telegramBotKeyboardFactory.createCurrencyKeyboard(currencies));
 
         try {
             bot.execute(sendMessage);
@@ -93,7 +94,7 @@ public class TelegramBotRequestHandler {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(update.getMessage().getChatId().toString());
         sendMessage.setText(resourceBundle.getString("choose.rate.type.message"));
-        sendMessage.setReplyMarkup(createPeriodOrDateKeyboard());
+        sendMessage.setReplyMarkup(telegramBotKeyboardFactory.createPeriodOrDateKeyboard());
 
         try {
             bot.execute(sendMessage);

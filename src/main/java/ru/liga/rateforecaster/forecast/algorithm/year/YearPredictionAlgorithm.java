@@ -3,12 +3,13 @@ package ru.liga.rateforecaster.forecast.algorithm.year;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.liga.rateforecaster.exception.InvalidPredictionDataException;
-import ru.liga.rateforecaster.forecast.algorithm.average.AveragePredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.model.CurrencyData;
 import ru.liga.rateforecaster.utils.DateUtils;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,45 +29,63 @@ public class YearPredictionAlgorithm extends RatePredictionAlgorithm {
      */
     @Override
     public CurrencyData calculateRateForDate(List<CurrencyData> currencyDataList, LocalDate targetDate) {
-        Optional<CurrencyData> currentYearRate = findTargetDateRate(currencyDataList, targetDate);
-        if (currentYearRate.isPresent()) {
-            return currentYearRate.get();
-        } else {
-            try {
-                return findLastYearRate(currencyDataList, targetDate);
-            } catch (RuntimeException e) {
-                logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage(), e);
-                throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
-            }
+        return findTargetDateRate(currencyDataList, targetDate)
+                .orElseGet(() -> getDefaultCurrencyData(currencyDataList, targetDate));
+    }
+
+    @NotNull
+    private CurrencyData getDefaultCurrencyData(List<CurrencyData> currencyDataList, LocalDate targetDate) {
+        try {
+            return findLastYearRate(currencyDataList, targetDate);
+        } catch (InvalidPredictionDataException e) {
+            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage(), e);
+            throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
         }
     }
 
     private CurrencyData findLastYearRate(List<CurrencyData> currencyDataList, LocalDate targetDate) {
+
+        if (currencyDataList.isEmpty()) {
+            throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
+        }
+
         Optional<CurrencyData> lastYearRate = Optional.empty();
         LocalDate targetDateNew = targetDate;
-        while (lastYearRate.isEmpty()) {
-            int attempts = 0;
+        int maxAttemptsAccordingToNumberOfYears = calculateYearDifferenceBetweenDates(currencyDataList, targetDate);
+        for (int yearIterationAttempts = 0; yearIterationAttempts <= maxAttemptsAccordingToNumberOfYears;
+             yearIterationAttempts++) {
+            int attemptsDueToEmptyWeekendRate = 0;
             targetDateNew = DateUtils.getLastYearDate(targetDateNew);
             LocalDate targerDateLetAloneWeekend = targetDateNew;
             lastYearRate = findTargetDateRate(currencyDataList, targerDateLetAloneWeekend);
-            if (!lastYearRate.isEmpty()) {
-                return new CurrencyData(targetDate, lastYearRate.get().getRate());
+            if (lastYearRate.isPresent()) {
+                return new CurrencyData(targetDate, lastYearRate.get().rate());
             }
-            while (attempts <= MAX_ATTEMPTS) {
+            while (attemptsDueToEmptyWeekendRate <= MAX_ATTEMPTS) {
                 lastYearRate = findTargetDateRate(currencyDataList, targerDateLetAloneWeekend);
-                if (!lastYearRate.isEmpty()) {
-                    return new CurrencyData(targetDate, lastYearRate.get().getRate());
+                if (lastYearRate.isPresent()) {
+                    return new CurrencyData(targetDate, lastYearRate.get().rate());
                 }
                 targerDateLetAloneWeekend = DateUtils.getPreviousDate(targerDateLetAloneWeekend);
-                attempts++;
+                attemptsDueToEmptyWeekendRate++;
             }
         }
-        return lastYearRate.get();
+        return lastYearRate.orElseThrow(() ->
+                new InvalidPredictionDataException("Failed to find the exchange rate for the specified date."));
     }
 
     private Optional<CurrencyData> findTargetDateRate(List<CurrencyData> currencyDataList, LocalDate date) {
-        return Optional.ofNullable(currencyDataList.stream()
-                .filter(data -> data.getDate().isEqual(date))
-                .findFirst().orElseGet(() -> null));
+        return currencyDataList.stream()
+                .filter(data -> data.date().isEqual(date))
+                .findFirst();
     }
+
+    private int calculateYearDifferenceBetweenDates(List<CurrencyData> currencyDataList, LocalDate targetDate) {
+        LocalDate oldestDate = currencyDataList.stream()
+                .map(CurrencyData::date)
+                .min(LocalDate::compareTo)
+                .orElse(targetDate);
+        return Period.between(oldestDate, targetDate).getYears();
+    }
+
 }

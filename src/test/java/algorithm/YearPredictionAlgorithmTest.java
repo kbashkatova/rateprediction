@@ -28,7 +28,7 @@ public class YearPredictionAlgorithmTest {
         List<CurrencyData> currencyDataList = new ArrayList<>();
         currencyDataList.add(new CurrencyData(targetDate, new BigDecimal("1.0")));
         CurrencyData result = predictionAlgorithm.calculateRateForDate(currencyDataList, targetDate);
-        assertEquals(new BigDecimal("1.0"), result.getRate(), String.valueOf(0.001));
+        assertEquals(new BigDecimal("1.0"), result.rate(), String.valueOf(0.001));
     }
 
     @Test
@@ -37,6 +37,6 @@ public class YearPredictionAlgorithmTest {
         List<CurrencyData> currencyDataList = new ArrayList<>();
         currencyDataList.add(new CurrencyData(targetDate.minusYears(1), new BigDecimal("2.0")));
         CurrencyData result = predictionAlgorithm.calculateRateForDate(currencyDataList, targetDate);
-        assertEquals(new BigDecimal("2.0"), result.getRate(), String.valueOf(0.001));
+        assertEquals(new BigDecimal("2.0"), result.rate(), String.valueOf(0.001));
     }
 }

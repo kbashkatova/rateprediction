@@ -1,7 +1,7 @@
 package ru.liga.rateforecaster.forecast.algorithm.factory;
 
-import ru.liga.rateforecaster.enums.Algorithm;
-import ru.liga.rateforecaster.forecast.algorithm.*;
+import ru.liga.rateforecaster.enums.ForecastingAlgorithm;
+import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.average.AveragePredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.mist.MistPredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.moon.MoonPredictionAlgorithm;
@@ -23,19 +23,19 @@ public class GenericPredictionAlgorithm {
      * @throws IllegalArgumentException if the specified algorithm type is invalid.
      */
     public static RatePredictionAlgorithm createAlgorithm(ParsedRequest parsedRequest) {
-    Algorithm algorithm = parsedRequest.getAlgorithm();
+        ForecastingAlgorithm algorithm = parsedRequest.algorithm();
 
-    switch (algorithm) {
-        case AVERAGE:
-            return new AveragePredictionAlgorithm();
-        case YEAR:
-            return new YearPredictionAlgorithm();
-        case MIST:
-            return new MistPredictionAlgorithm();
-        case MOON:
-            return new MoonPredictionAlgorithm();
-        default:
-            throw new IllegalArgumentException("Invalid algorithm: " + algorithm);
+        switch (algorithm) {
+            case AVERAGE:
+                return new AveragePredictionAlgorithm();
+            case YEAR:
+                return new YearPredictionAlgorithm();
+            case MIST:
+                return new MistPredictionAlgorithm();
+            case MOON:
+                return new MoonPredictionAlgorithm();
+            default:
+                throw new IllegalArgumentException("Invalid algorithm: " + algorithm);
+        }
     }
-}
 }

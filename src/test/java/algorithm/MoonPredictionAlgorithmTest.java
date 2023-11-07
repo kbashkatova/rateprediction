@@ -36,7 +36,7 @@ public class MoonPredictionAlgorithmTest {
         MoonPredictionAlgorithm predictionAlgorithm = new MoonPredictionAlgorithm();
         CurrencyData result = predictionAlgorithm.calculateRateForDate(lastMonthData, targetDate);
 
-        assertEquals(BigDecimal.valueOf(expectedRate), result.getRate());
+        assertEquals(BigDecimal.valueOf(expectedRate), result.rate());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class MoonPredictionAlgorithmTest {
 
         CurrencyData result = predictionAlgorithm.calculateRateForDate(lastMonthData, targetDate);
 
-        assertEquals(BigDecimal.valueOf(expectedRate), result.getRate());
+        assertEquals(BigDecimal.valueOf(expectedRate), result.rate());
     }
 
     @Test
