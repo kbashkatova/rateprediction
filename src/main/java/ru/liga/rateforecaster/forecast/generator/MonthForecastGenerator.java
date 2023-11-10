@@ -3,7 +3,7 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
+import ru.liga.rateforecaster.data.pathresolver.CurrencyPathResolver;
 import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.formatter.ResultFormatter;

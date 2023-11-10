@@ -38,7 +38,7 @@ public class YearPredictionAlgorithm extends RatePredictionAlgorithm {
         try {
             return findLastYearRate(currencyDataList, targetDate);
         } catch (InvalidPredictionDataException e) {
-            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage());
+            logger.error("Failed to calculate the rate for the specified date: " + e.getMessage(), e);
             throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
         }
     }

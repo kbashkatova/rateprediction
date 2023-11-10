@@ -1,4 +1,4 @@
-package ru.liga.rateforecaster.data.factory;
+package ru.liga.rateforecaster.data.pathresolver;
 
 import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.utils.AppConfig;

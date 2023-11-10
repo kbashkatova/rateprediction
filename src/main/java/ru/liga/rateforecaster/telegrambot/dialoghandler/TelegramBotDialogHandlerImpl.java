@@ -150,7 +150,7 @@ public class TelegramBotDialogHandlerImpl implements TelegramBotDialogHandler {
                 botState.setState(State.WAITING_FOR_ALGORITHM);
                 telegramBotRequestHandler.openAlgorithmKeyboard(update);
             } catch (RuntimeException e) {
-                log.error("Date parse error: {}", e.getMessage());
+                log.error("Date parse error: " + e.getMessage(), e);
                 telegramMessageSender.sendMessage(errorResourceBundle.getString("date.parse.error.message"), update);
                 botState.setState(WAITING_FOR_DATE_INPUT);
             }

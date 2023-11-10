@@ -3,7 +3,7 @@ package ru.liga.rateforecaster;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
+import ru.liga.rateforecaster.data.pathresolver.CurrencyPathResolver;
 import ru.liga.rateforecaster.forecast.UserRequestForecastGenerator;
 import ru.liga.rateforecaster.forecast.algorithm.factory.GenericPredictionAlgorithm;
 import ru.liga.rateforecaster.telegrambot.Bot;

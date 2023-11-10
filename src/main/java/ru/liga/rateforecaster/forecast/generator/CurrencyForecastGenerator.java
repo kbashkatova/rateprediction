@@ -3,7 +3,7 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
+import ru.liga.rateforecaster.data.pathresolver.CurrencyPathResolver;
 import ru.liga.rateforecaster.data.processor.CurrencyDataProcessor;
 import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.model.FormattedResult;
@@ -52,7 +52,7 @@ public abstract class CurrencyForecastGenerator {
             String filePath = currencyPathResolver.getPath(currency);
             return new CurrencyDataProcessor(filePath);
         } catch (RuntimeException e) {
-            logger.error("Failed to create data processor: {}", e.getMessage());
+            logger.error("Failed to create data processor: " + e.getMessage(), e);
             throw new RuntimeException("Failed to create data processor", e);
         }
     }

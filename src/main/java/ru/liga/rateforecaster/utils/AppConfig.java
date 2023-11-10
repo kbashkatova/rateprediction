@@ -23,7 +23,7 @@ public class AppConfig {
         try (FileInputStream input = new FileInputStream(PROPERTIES_PATH)) {
             properties.load(input);
         } catch (IOException e) {
-            logger.error("Failed to load application properties from {}", PROPERTIES_PATH, e);
+            logger.error("Failed to load application properties from " + PROPERTIES_PATH, e);
             throw new RuntimeException("Failed to load application properties from " + PROPERTIES_PATH, e);
         }
     }

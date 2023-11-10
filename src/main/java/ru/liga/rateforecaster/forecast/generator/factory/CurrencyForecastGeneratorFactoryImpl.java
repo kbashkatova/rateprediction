@@ -1,6 +1,6 @@
 package ru.liga.rateforecaster.forecast.generator.factory;
 
-import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
+import ru.liga.rateforecaster.data.pathresolver.CurrencyPathResolver;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.factory.GenericPredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.generator.CurrencyForecastGenerator;
