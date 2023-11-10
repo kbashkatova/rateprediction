@@ -55,7 +55,7 @@ public class CurrencyDataProcessor {
                 currencyDataList.add(currencyData);
             }
         } catch (IOException e) {
-            logger.error("Failed to read data from resource: {}", e.getMessage(), e);
+            logger.error("Failed to read data from resource: {}", e.getMessage());
             throw new IOException("Failed to read data from resource", e);
         }
         return currencyDataList;

@@ -3,6 +3,7 @@ package ru.liga.rateforecaster.forecast;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
 import ru.liga.rateforecaster.forecast.algorithm.factory.GenericPredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.generator.CurrencyForecastGenerator;
 import ru.liga.rateforecaster.forecast.generator.factory.CurrencyForecastGeneratorFactoryImpl;
@@ -24,10 +25,19 @@ public class UserRequestForecastGenerator {
     private final ResourceBundle resourceBundle;
 
     private final GenericPredictionAlgorithm genericPredictionAlgorithm;
+    private final CurrencyPathResolver currencyPathResolver;
 
-    public UserRequestForecastGenerator(ResourceBundle resourceBundle, GenericPredictionAlgorithm genericPredictionAlgorithm) {
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    public UserRequestForecastGenerator(ResourceBundle resourceBundle,
+                                        GenericPredictionAlgorithm genericPredictionAlgorithm,
+                                        CurrencyPathResolver currencyPathResolver) {
         this.resourceBundle = resourceBundle;
         this.genericPredictionAlgorithm = genericPredictionAlgorithm;
+        this.currencyPathResolver = currencyPathResolver;
     }
     /**
      * Proceeds with the user's request, generates a forecast, and returns a FormattedResult.
@@ -53,22 +63,23 @@ public class UserRequestForecastGenerator {
      */
     private FormattedResult generateForecast(ParsedRequest parsedRequest) {
         try {
-            final CurrencyForecastGenerator forecast = new CurrencyForecastGeneratorFactoryImpl(genericPredictionAlgorithm).createGenerator(parsedRequest, resourceBundle);
+            final CurrencyForecastGenerator forecast = new CurrencyForecastGeneratorFactoryImpl(
+                    genericPredictionAlgorithm, currencyPathResolver).createGenerator(parsedRequest, resourceBundle);
             return forecast.generateForecast(parsedRequest);
         } catch (CsvValidationException e) {
-            logger.error("CSV validation error: {}", e.getMessage(), e);
+            logger.error("CSV validation error: {}", e.getMessage());
             return new FormattedResult(new ErrorMessage(resourceBundle.getString("csvValidationError")));
         } catch (ParseException e) {
-            logger.error("Parse error: {}", e.getMessage(), e);
+            logger.error("Parse error: {}", e.getMessage());
             return new FormattedResult(new ErrorMessage(resourceBundle.getString("parseError")));
         } catch (IOException e) {
-            logger.error("IO error: {}", e.getMessage(), e);
+            logger.error("IO error: {}", e.getMessage());
             return new FormattedResult(new ErrorMessage(resourceBundle.getString("ioError")));
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid request: {}", e.getMessage(), e);
+            logger.error("Invalid request: {}", e.getMessage());
             return new FormattedResult(new ErrorMessage(resourceBundle.getString("invalidRequestError")));
         } catch (Exception e) {
-            logger.error("Failed to generate forecast: {}", e.getMessage(), e);
+            logger.error("Failed to generate forecast: {}", e.getMessage());
             return new FormattedResult(new ErrorMessage(resourceBundle.getString("genericError")));
         }
     }

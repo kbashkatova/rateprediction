@@ -1,6 +1,6 @@
 package ru.liga.rateforecaster.forecast.generator.factory;
 
-import ru.liga.rateforecaster.data.factory.GenericCurrencyProcessorFactory;
+import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.algorithm.factory.GenericPredictionAlgorithm;
 import ru.liga.rateforecaster.forecast.generator.CurrencyForecastGenerator;
@@ -20,9 +20,11 @@ import java.util.ResourceBundle;
 public class CurrencyForecastGeneratorFactoryImpl implements CurrencyForecastGeneratorFactory {
 
     private final GenericPredictionAlgorithm genericPredictionAlgorithm;
+    private final CurrencyPathResolver currencyPathResolver;
 
-    public CurrencyForecastGeneratorFactoryImpl(GenericPredictionAlgorithm genericPredictionAlgorithm) {
+    public CurrencyForecastGeneratorFactoryImpl(GenericPredictionAlgorithm genericPredictionAlgorithm, CurrencyPathResolver currencyPathResolver) {
         this.genericPredictionAlgorithm = genericPredictionAlgorithm;
+        this.currencyPathResolver = currencyPathResolver;
     }
 
     /**
@@ -37,11 +39,10 @@ public class CurrencyForecastGeneratorFactoryImpl implements CurrencyForecastGen
     public CurrencyForecastGenerator createGenerator(ParsedRequest parsedRequest, ResourceBundle resourceBundle) {
         RatePredictionAlgorithm ratePredictionAlgorithm = genericPredictionAlgorithm.createAlgorithm(parsedRequest);
         ResultFormatter resultFormatter = initializeResourceFormatter(parsedRequest, resourceBundle);
-        GenericCurrencyProcessorFactory genericCurrencyProcessorFactory = new GenericCurrencyProcessorFactory();
         return switch (parsedRequest.rateType()) {
-            case DAY -> new DateCurrencyForecastGenerator(resultFormatter, ratePredictionAlgorithm, genericCurrencyProcessorFactory);
-            case WEEK -> new WeeklyCurrencyForecastGenerator(resultFormatter, ratePredictionAlgorithm, genericCurrencyProcessorFactory);
-            case MONTH -> new MonthForecastGenerator(resultFormatter, ratePredictionAlgorithm, genericCurrencyProcessorFactory);
+            case DAY -> new DateCurrencyForecastGenerator(resultFormatter, ratePredictionAlgorithm, currencyPathResolver);
+            case WEEK -> new WeeklyCurrencyForecastGenerator(resultFormatter, ratePredictionAlgorithm, currencyPathResolver);
+            case MONTH -> new MonthForecastGenerator(resultFormatter, ratePredictionAlgorithm, currencyPathResolver);
             default -> throw new IllegalArgumentException("Invalid forecast type: " + parsedRequest.rateType());
         };
     }

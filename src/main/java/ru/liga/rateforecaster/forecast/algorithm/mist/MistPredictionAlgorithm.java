@@ -57,7 +57,7 @@ public class MistPredictionAlgorithm extends RatePredictionAlgorithm {
 
             return currencyDataList.get(randomIndex);
         } catch (RuntimeException e) {
-            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage(), e);
+            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage());
             throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
         }
     }

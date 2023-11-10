@@ -11,8 +11,6 @@ import ru.liga.rateforecaster.model.FormattedResult;
 import ru.liga.rateforecaster.telegrambot.model.BotState;
 import ru.liga.rateforecaster.telegrambot.model.State;
 import ru.liga.rateforecaster.telegrambot.sender.TelegramMessageSender;
-import ru.liga.rateforecaster.telegrambot.sender.TelegramMessageSenderImpl;
-import ru.liga.rateforecaster.utils.AppConfig;
 import ru.liga.rateforecaster.utils.DateUtils;
 
 import java.util.*;
@@ -27,17 +25,23 @@ public class TelegramBotDialogHandlerImpl implements TelegramBotDialogHandler {
     private static final Logger log = LoggerFactory.getLogger(TelegramBotDialogHandlerImpl.class);
     private final TelegramBotRequestHandler telegramBotRequestHandler;
     private final TelegramMessageSender telegramMessageSender;
+    private final ResourceBundle errorResourceBundle;
+    private final ResourceBundle messageResourceBundle;
     private final Map<Long, BotState> userStates = new HashMap<>();
-    private static final ResourceBundle messageResourceBundle = loadResourceBundle();
-    private static final ResourceBundle errorResourceBundle = loadErrorResourceBundle();
+
     private static final String START_COMMAND = "/start";
     private static final String HELP_COMMAND = "/help";
     private static final String EXIT_COMMAND = "/exit";
     private static final String TOMORROW_COMMAND = "tomorrow";
 
-    public TelegramBotDialogHandlerImpl(TelegramBotRequestHandler telegramBotRequestHandler, TelegramMessageSenderImpl telegramMessageSender) {
+    public TelegramBotDialogHandlerImpl(TelegramBotRequestHandler telegramBotRequestHandler,
+                                        TelegramMessageSender telegramMessageSender,
+                                        ResourceBundle messageResourceBundle,
+                                        ResourceBundle errorResourceBundle) {
         this.telegramBotRequestHandler = telegramBotRequestHandler;
         this.telegramMessageSender = telegramMessageSender;
+        this.messageResourceBundle = messageResourceBundle;
+        this.errorResourceBundle = errorResourceBundle;
     }
 
     /**
@@ -58,6 +62,7 @@ public class TelegramBotDialogHandlerImpl implements TelegramBotDialogHandler {
                 log.info("Received '/start' command from user.");
                 startNewConversation(update);
                 botState = initializeBot(update);
+                userStates.put(userId, botState);
             } else if (HELP_COMMAND.equals(messageText)) {
                 log.info("Received '/help' command from user.");
                 showHelp(botState, update);
@@ -73,6 +78,7 @@ public class TelegramBotDialogHandlerImpl implements TelegramBotDialogHandler {
     }
 
     private void handleUserMessage(String messageText, BotState botState, Update update) {
+        Long userId = update.getMessage().getFrom().getId();
         switch (botState.getState()) {
             case WAITING_FOR_CURRENCY:
                 handleCurrencySelection(messageText, botState, update, botState.getCurrencies());
@@ -90,6 +96,7 @@ public class TelegramBotDialogHandlerImpl implements TelegramBotDialogHandler {
                 handleOutputSelection(messageText, botState);
                 handleRequestAndRestart(botState, update);
                 botState = initializeBot(update);
+                userStates.put(userId, botState);
                 break;
         }
     }
@@ -168,18 +175,6 @@ public class TelegramBotDialogHandlerImpl implements TelegramBotDialogHandler {
         FormattedResult result = telegramMessageSender.handleUserRequest(botState);
         telegramMessageSender.sendMessageResult(result, update);
         telegramMessageSender.sendMessage(messageResourceBundle.getString("success.message"), update);
-    }
-
-    private static ResourceBundle loadResourceBundle() {
-        AppConfig appConfig = AppConfig.getInstance();
-        String locale = appConfig.getLocale();
-        return ResourceBundle.getBundle("messages/messages", new Locale(locale));
-    }
-
-    private static ResourceBundle loadErrorResourceBundle() {
-        AppConfig appConfig = AppConfig.getInstance();
-        String locale = appConfig.getLocale();
-        return ResourceBundle.getBundle("messages/errors", new Locale(locale));
     }
 
     private void showHelp(BotState botState, Update update) {

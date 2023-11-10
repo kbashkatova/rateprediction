@@ -4,7 +4,7 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.rateforecaster.data.factory.GenericCurrencyProcessorFactory;
+import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
 import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.formatter.ResultFormatter;
@@ -35,8 +35,8 @@ public class DateCurrencyForecastGenerator extends CurrencyForecastGenerator {
 
     public DateCurrencyForecastGenerator(ResultFormatter resultFormatter,
                                          RatePredictionAlgorithm ratePredictionAlgorithm,
-                                         GenericCurrencyProcessorFactory genericCurrencyProcessorFactory) {
-        super(genericCurrencyProcessorFactory);
+                                         CurrencyPathResolver currencyPathResolver) {
+        super(currencyPathResolver);
         this.resultFormatter = resultFormatter;
         this.ratePredictionAlgorithm = ratePredictionAlgorithm;
     }
@@ -55,7 +55,7 @@ public class DateCurrencyForecastGenerator extends CurrencyForecastGenerator {
         for (Currency currency : parsedRequest.currencies()) {
             final LinkedList<CurrencyData> currencyDataList = createDataProcessor(currency).readCurrencyDataFromResources();
             final CurrencyData forecastCurs = calculateForecastForDate(currencyDataList, parsedRequest);
-            currencyDataForResultOutputs.add(new CurrencyDataForResultOutput(currency, new ArrayList<>(List.of(forecastCurs))));
+            currencyDataForResultOutputs.add(new CurrencyDataForResultOutput(currency, List.of(forecastCurs)));
         }
         return resultFormatter.format(currencyDataForResultOutputs, parsedRequest);
     }
@@ -74,6 +74,7 @@ public class DateCurrencyForecastGenerator extends CurrencyForecastGenerator {
             logger.error(errorMessage);
             return new IllegalArgumentException(errorMessage);
         });
-        return Optional.ofNullable(ratePredictionAlgorithm.getRateForDate(currencyData, targetDate)).orElseGet(() -> ratePredictionAlgorithm.calculateRateForDate(currencyData, targetDate));
+        return Optional.ofNullable(ratePredictionAlgorithm.getRateForDate(currencyData, targetDate))
+                .orElseGet(() -> ratePredictionAlgorithm.calculateRateForDate(currencyData, targetDate));
     }
 }

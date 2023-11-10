@@ -46,7 +46,7 @@ public class MoonPredictionAlgorithm extends RatePredictionAlgorithm {
             logger.info("Currency rate calculated successfully.");
             return new CurrencyData(targetDate, BigDecimal.valueOf(predictedRate));
         } catch (RuntimeException e) {
-            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage(), e);
+            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage());
             throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
         }
     }

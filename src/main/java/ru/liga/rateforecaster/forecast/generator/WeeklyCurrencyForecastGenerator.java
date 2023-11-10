@@ -4,10 +4,10 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.rateforecaster.data.factory.GenericCurrencyProcessorFactory;
+import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
+import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
 import ru.liga.rateforecaster.formatter.ResultFormatter;
-import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.formatter.model.CurrencyDataForResultOutput;
 import ru.liga.rateforecaster.model.CurrencyData;
 import ru.liga.rateforecaster.model.FormattedResult;
@@ -33,8 +33,8 @@ public class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator {
 
     public WeeklyCurrencyForecastGenerator(ResultFormatter resultFormatter,
                                            RatePredictionAlgorithm ratePredictionAlgorithm,
-                                           GenericCurrencyProcessorFactory genericCurrencyProcessorFactory) {
-        super(genericCurrencyProcessorFactory);
+                                           CurrencyPathResolver currencyPathResolver) {
+        super(currencyPathResolver);
         this.resultFormatter = resultFormatter;
         this.ratePredictionAlgorithm = ratePredictionAlgorithm;
     }

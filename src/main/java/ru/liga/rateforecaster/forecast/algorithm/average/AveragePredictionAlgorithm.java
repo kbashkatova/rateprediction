@@ -73,7 +73,7 @@ public class AveragePredictionAlgorithm extends RatePredictionAlgorithm {
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     .divide(BigDecimal.valueOf(previousData.size()), 2, RoundingMode.HALF_UP);
         } catch (RuntimeException e) {
-            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage(), e);
+            logger.error("Failed to calculate the rate for the specified date: {}", e.getMessage());
             throw new InvalidPredictionDataException("Failed to calculate the rate for the specified date");
         }
     }
@@ -97,7 +97,7 @@ public class AveragePredictionAlgorithm extends RatePredictionAlgorithm {
                 return result;
             }
         } catch (RuntimeException e) {
-            logger.error("Failed to fill missing dates: {}", e.getMessage(), e);
+            logger.error("Failed to fill missing dates: {}", e.getMessage());
             throw new DataFillFailureException("Failed to fill missing dates for average forecast generation.");
         }
     }

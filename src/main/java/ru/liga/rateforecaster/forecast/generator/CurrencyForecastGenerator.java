@@ -3,7 +3,7 @@ package ru.liga.rateforecaster.forecast.generator;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.liga.rateforecaster.data.factory.GenericCurrencyProcessorFactory;
+import ru.liga.rateforecaster.data.factory.CurrencyPathResolver;
 import ru.liga.rateforecaster.data.processor.CurrencyDataProcessor;
 import ru.liga.rateforecaster.enums.Currency;
 import ru.liga.rateforecaster.model.FormattedResult;
@@ -18,11 +18,13 @@ import java.text.ParseException;
  * Subclasses of this class implement specific forecast generation logic.
  */
 public abstract class CurrencyForecastGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(CurrencyForecastGenerator.class);
-    private final GenericCurrencyProcessorFactory genericCurrencyProcessorFactory;
 
-    protected CurrencyForecastGenerator(GenericCurrencyProcessorFactory genericCurrencyProcessorFactory) {
-        this.genericCurrencyProcessorFactory = genericCurrencyProcessorFactory;
+    private static final Logger logger = LoggerFactory.getLogger(CurrencyForecastGenerator.class);
+
+    private final CurrencyPathResolver currencyPathResolver;
+
+    protected CurrencyForecastGenerator(CurrencyPathResolver currencyPathResolver) {
+        this.currencyPathResolver = currencyPathResolver;
     }
 
 
@@ -47,9 +49,10 @@ public abstract class CurrencyForecastGenerator {
      */
     protected CurrencyDataProcessor createDataProcessor(Currency currency) {
         try {
-            return genericCurrencyProcessorFactory.getFactory(currency).createCurrencyDataProcessor();
+            String filePath = currencyPathResolver.getPath(currency);
+            return new CurrencyDataProcessor(filePath);
         } catch (RuntimeException e) {
-            logger.error("Failed to create data processor: {}", e.getMessage(), e);
+            logger.error("Failed to create data processor: {}", e.getMessage());
             throw new RuntimeException("Failed to create data processor", e);
         }
     }
