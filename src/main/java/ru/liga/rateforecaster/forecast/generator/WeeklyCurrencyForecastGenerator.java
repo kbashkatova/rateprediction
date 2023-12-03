@@ -2,69 +2,89 @@ package ru.liga.rateforecaster.forecast.generator;
 
 
 import com.opencsv.exceptions.CsvValidationException;
-import ru.liga.rateforecaster.forecast.algorithm.RateCalculator;
-import ru.liga.rateforecaster.formatter.ResultFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.liga.rateforecaster.data.pathresolver.CurrencyPathResolver;
 import ru.liga.rateforecaster.enums.Currency;
+import ru.liga.rateforecaster.forecast.algorithm.RatePredictionAlgorithm;
+import ru.liga.rateforecaster.formatter.ResultFormatter;
+import ru.liga.rateforecaster.formatter.model.CurrencyDataForResultOutput;
 import ru.liga.rateforecaster.model.CurrencyData;
+import ru.liga.rateforecaster.model.FormattedResult;
+import ru.liga.rateforecaster.model.ParsedRequest;
 import ru.liga.rateforecaster.utils.DateUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
-class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator implements ResultFormatter {
+/**
+ * The WeeklyCurrencyForecastGenerator class represents a generator for weekly currency forecasts.
+ * It provides methods to calculate and generate weekly forecasts based on the given data.
+ */
+public class WeeklyCurrencyForecastGenerator extends CurrencyForecastGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(CurrencyForecastGenerator.class);
+
+    private final ResultFormatter resultFormatter;
+    private final RatePredictionAlgorithm ratePredictionAlgorithm;
+    private static final int NUMBER_OF_DAYS_IN_A_WEEK = 7;
+
+    public WeeklyCurrencyForecastGenerator(ResultFormatter resultFormatter,
+                                           RatePredictionAlgorithm ratePredictionAlgorithm,
+                                           CurrencyPathResolver currencyPathResolver) {
+        super(currencyPathResolver);
+        this.resultFormatter = resultFormatter;
+        this.ratePredictionAlgorithm = ratePredictionAlgorithm;
+    }
+
     /**
-     * Generates a weekly currency forecast for the specified currency.
+     * Generates weekly currency forecasts based on the parsed request and data from resources.
      *
-     * @param currency The currency for which the weekly forecast should be generated.
-     * @return A string representing the weekly currency forecast.
-     * @throws CsvValidationException if an error occurs during CSV validation.
-     * @throws IOException if an error occurs while reading data from resources.
+     * @param parsedRequest The parsed user request.
+     * @return A formatted result containing the weekly currency forecasts.
+     * @throws CsvValidationException If there is an issue with CSV validation.
+     * @throws IOException            If an I/O error occurs.
      */
     @Override
-    public String generateForecast(Currency currency) throws CsvValidationException, IOException {
-        final LocalDate forecastStartEnd = DateUtils.getLastDayOfWeekForecast();
-        final LinkedList<CurrencyData> currencyDataList = createDataProcessor(currency).readCurrencyDataFromResources();
-        return format(currency, calculateWeeklyForecast(currencyDataList, forecastStartEnd));
+    public FormattedResult generateForecast(ParsedRequest parsedRequest) throws CsvValidationException, IOException {
+        final LocalDate forecastPeriodEnd = DateUtils.getLastDayOfWeekForecast(parsedRequest.date().orElseGet(DateUtils::getCurrentDate));
+        final List<CurrencyDataForResultOutput> currencyDataForResultOutputs = new ArrayList<>();
+        for (Currency currency : parsedRequest.currencies()) {
+            final LinkedList<CurrencyData> currencyDataList = createDataProcessor(currency).readCurrencyDataFromResources();
+            List<CurrencyData> forecastData = calculateWeeklyForecast(currencyDataList, forecastPeriodEnd);
+            currencyDataForResultOutputs.add(new CurrencyDataForResultOutput(currency, forecastData));
+        }
+
+        return resultFormatter.format(currencyDataForResultOutputs, parsedRequest);
     }
 
     /**
      * Calculates a weekly currency forecast based on the currency data list and the target date.
      *
-     * @param currencyDataList The list of currency data for which the forecast is calculated.
-     * @param targetDate The target date for the forecast.
+     * @param currencyDataList  The list of currency data for which the forecast is calculated.
+     * @param forecastPeriodEnd The target date for the forecast.
      * @return A list of currency data representing the weekly forecast.
      */
-    protected List<CurrencyData> calculateWeeklyForecast(LinkedList<CurrencyData> currencyDataList,
-                                                         LocalDate targetDate) {
-        final CurrencyData rateForDate = RateCalculator.calculateRateForDate(currencyDataList, targetDate);
+    private List<CurrencyData> calculateWeeklyForecast(LinkedList<CurrencyData> currencyDataList, LocalDate forecastPeriodEnd) {
+        final CurrencyData rateForDate = ratePredictionAlgorithm.getRateForDate(currencyDataList, forecastPeriodEnd);
 
         if (rateForDate == null) {
-            fillMissingDates(currencyDataList, currencyDataList.get(0).getDate(), targetDate);
+            List<CurrencyData> resultData = new ArrayList<>();
+            List<LocalDate> targetDates = new ArrayList<>();
+            LocalDate currentDate = forecastPeriodEnd;
+            for (int i = 0; i < NUMBER_OF_DAYS_IN_A_WEEK; i++) {
+                targetDates.add(currentDate);
+                currentDate = DateUtils.getPreviousDate(currentDate);
+            }
+            for (LocalDate date : targetDates) {
+                resultData.add(ratePredictionAlgorithm.calculateRateForDate(currencyDataList, date));
+            }
+            logger.info("Calculated weekly forecast for {} days", NUMBER_OF_DAYS_IN_A_WEEK);
+            return resultData;
         }
-        return currencyDataList.subList(0, 7);
-    }
-
-    /**
-     * Formats the weekly currency forecast data for display.
-     *
-     * @param currency      The currency for which the forecast is made.
-     * @param forecastData  A list of currency data including the weekly forecast.
-     * @return A formatted string representing the weekly forecast data.
-     */
-    @Override
-    public String format(Currency currency, List<CurrencyData> forecastData) {
-        final StringBuilder formattedResult = new StringBuilder();
-        formattedResult.append(String.format("rate %s week%n", currency));
-
-       final ListIterator<CurrencyData> iterator = forecastData.listIterator(forecastData.size());
-        while (iterator.hasPrevious()) {
-            final CurrencyData data = iterator.previous();
-            formattedResult.append(String.format("%s - %.2f%n", data.getDate(), data.getRate()));
-        }
-
-        return formattedResult.toString();
+        logger.info("Using available data for weekly forecast");
+        return currencyDataList.subList(0, NUMBER_OF_DAYS_IN_A_WEEK);
     }
 }

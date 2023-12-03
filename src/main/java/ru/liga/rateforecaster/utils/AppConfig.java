@@ -23,7 +23,7 @@ public class AppConfig {
         try (FileInputStream input = new FileInputStream(PROPERTIES_PATH)) {
             properties.load(input);
         } catch (IOException e) {
-            logger.error("Failed to load application properties from {}", PROPERTIES_PATH, e);
+            logger.error("Failed to load application properties from " + PROPERTIES_PATH, e);
             throw new RuntimeException("Failed to load application properties from " + PROPERTIES_PATH, e);
         }
     }
@@ -43,6 +43,22 @@ public class AppConfig {
 
     public String getUsdFilePath() {
         return properties.getProperty("usdFilePath");
+    }
+
+    public String getBgnFilePath() {
+        return properties.getProperty("bgnFilePath");
+    }
+
+    public String getAmdFilePath() {
+        return properties.getProperty("amdFilePath");
+    }
+
+    public String getBotUserName() {
+        return System.getenv("TELEGRAM_BOT_USERNAME");
+    }
+
+    public String getBotToken() {
+        return System.getenv("TELEGRAM_BOT_TOKEN");
     }
 
     public String getLocale() {
